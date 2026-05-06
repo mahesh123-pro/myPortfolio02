@@ -25,7 +25,7 @@ export default function CaseStudyPage() {
 
   if (!project) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">Project Not Found</h1>
           <button onClick={() => router.push("/")} className="text-accent-blue hover:underline">Return Home</button>
@@ -35,7 +35,7 @@ export default function CaseStudyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-accent-blue selection:text-white">
+    <div className="min-h-screen bg-background text-foreground selection:bg-accent-blue selection:text-white">
       {/* Scroll Progress */}
       <motion.div 
         style={{ scaleX }}
@@ -53,7 +53,7 @@ export default function CaseStudyPage() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             onClick={() => router.push("/")}
-            className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors mb-12 group"
+            className="flex items-center gap-2 text-foreground/60 hover:text-foreground transition-colors mb-12 group"
           >
             <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
             Back to Home
@@ -64,7 +64,7 @@ export default function CaseStudyPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-xs font-mono tracking-widest text-accent-blue mb-8 uppercase">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-foreground/5 border border-foreground/10 text-xs font-mono tracking-widest text-accent-blue mb-8 uppercase">
               <Zap size={14} /> Case Study
             </div>
             
@@ -74,7 +74,7 @@ export default function CaseStudyPage() {
               ))}
             </h1>
 
-            <p className="text-xl md:text-2xl text-neutral-400 max-w-3xl leading-relaxed font-light mb-12">
+            <p className="text-xl md:text-2xl text-foreground/60 max-w-3xl leading-relaxed font-light mb-12">
               {project.description}
             </p>
 
@@ -133,7 +133,7 @@ export default function CaseStudyPage() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="p-12 rounded-[40px] bg-neutral-900/50 border border-white/5 backdrop-blur-sm"
+              className="p-12 rounded-[40px] bg-foreground/5 border border-foreground/5 backdrop-blur-sm"
             >
               <div className="flex items-center gap-4 mb-8">
                 <div className="p-3 rounded-2xl bg-accent-blue/10 text-accent-blue">
@@ -141,7 +141,7 @@ export default function CaseStudyPage() {
                 </div>
                 <h2 className="text-3xl font-heading font-bold">System Architecture</h2>
               </div>
-              <p className="text-neutral-400 leading-relaxed text-lg">
+              <p className="text-foreground/60 leading-relaxed text-lg">
                 {project.architecture}
               </p>
             </motion.div>
@@ -151,7 +151,7 @@ export default function CaseStudyPage() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="p-12 rounded-[40px] bg-neutral-900/50 border border-white/5 backdrop-blur-sm"
+              className="p-12 rounded-[40px] bg-foreground/5 border border-foreground/5 backdrop-blur-sm"
             >
               <div className="flex items-center gap-4 mb-8">
                 <div className="p-3 rounded-2xl bg-accent-purple/10 text-accent-purple">
@@ -163,7 +163,7 @@ export default function CaseStudyPage() {
                 {project.features.map((feature, i) => (
                   <li key={i} className="flex gap-4">
                     <div className="mt-1.5 flex-shrink-0 w-2 h-2 rounded-full bg-accent-purple shadow-[0_0_10px_rgba(139,92,246,0.5)]"></div>
-                    <span className="text-neutral-300 text-lg">{feature}</span>
+                    <span className="text-foreground/80 text-lg">{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -178,18 +178,18 @@ export default function CaseStudyPage() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="p-12 rounded-[40px] bg-neutral-900/50 border border-white/5 backdrop-blur-sm"
+              className="p-12 rounded-[40px] bg-foreground/5 border border-foreground/5 backdrop-blur-sm"
             >
               <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-2xl bg-emerald-400/10 text-emerald-400">
+                <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-500">
                   <TrendingUp />
                 </div>
                 <h2 className="text-3xl font-heading font-bold">Impact & Metrics</h2>
               </div>
               <div className="grid grid-cols-1 gap-6">
                 {project.metrics.map((metric, i) => (
-                  <div key={i} className="p-6 rounded-2xl bg-white/5 border border-white/5 group hover:bg-white/10 transition-colors">
-                    <p className="text-neutral-300 group-hover:text-white transition-colors">{metric}</p>
+                  <div key={i} className="p-6 rounded-2xl bg-foreground/5 border border-foreground/5 group hover:bg-foreground/10 transition-colors">
+                    <p className="text-foreground/80 group-hover:text-foreground transition-colors">{metric}</p>
                   </div>
                 ))}
               </div>
@@ -200,23 +200,23 @@ export default function CaseStudyPage() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="p-12 rounded-[40px] bg-neutral-900/50 border border-white/5 backdrop-blur-sm"
+              className="p-12 rounded-[40px] bg-foreground/5 border border-foreground/5 backdrop-blur-sm"
             >
               <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-2xl bg-orange-400/10 text-orange-400">
+                <div className="p-3 rounded-2xl bg-orange-500/10 text-orange-500">
                   <Lightbulb />
                 </div>
                 <h2 className="text-3xl font-heading font-bold">Challenges & Solutions</h2>
               </div>
               <div className="space-y-8">
                 <div className="space-y-3">
-                  <span className="text-[10px] font-mono uppercase tracking-[0.2em] px-3 py-1 bg-red-500/20 text-red-100 rounded-full border border-red-500/20">The Problem</span>
-                  <p className="text-neutral-300 text-lg leading-relaxed">{project.challenge}</p>
+                  <span className="text-xs font-mono uppercase tracking-[0.2em] px-3 py-1 bg-red-500/10 text-red-500 rounded-full border border-red-500/20">The Problem</span>
+                  <p className="text-foreground/80 text-lg leading-relaxed">{project.challenge}</p>
                 </div>
-                <div className="w-full h-px bg-white/5"></div>
+                <div className="w-full h-px bg-foreground/10"></div>
                 <div className="space-y-3">
-                  <span className="text-[10px] font-mono uppercase tracking-[0.2em] px-3 py-1 bg-emerald-500/20 text-emerald-100 rounded-full border border-emerald-500/20">The Solution</span>
-                  <p className="text-neutral-300 text-lg leading-relaxed">{project.solution}</p>
+                  <span className="text-xs font-mono uppercase tracking-[0.2em] px-3 py-1 bg-emerald-500/10 text-emerald-500 rounded-full border border-emerald-500/20">The Solution</span>
+                  <p className="text-foreground/80 text-lg leading-relaxed">{project.solution}</p>
                 </div>
               </div>
             </motion.div>
@@ -229,13 +229,13 @@ export default function CaseStudyPage() {
       <section className="py-32 px-6">
         <motion.div 
           whileHover={{ scale: 1.01 }}
-          className="max-w-5xl mx-auto p-16 rounded-[50px] bg-gradient-to-br from-accent-blue/20 via-accent-purple/20 to-transparent border border-white/10 relative overflow-hidden flex flex-col items-center text-center gap-8"
+          className="max-w-5xl mx-auto p-16 rounded-[50px] bg-gradient-to-br from-accent-blue/10 via-accent-purple/10 to-transparent border border-foreground/10 relative overflow-hidden flex flex-col items-center text-center gap-8"
         >
           <div className="absolute top-0 left-0 w-full h-full bg-grid-white/[0.02] pointer-events-none"></div>
           <h2 className="text-4xl md:text-5xl font-heading font-bold">Ready to scale your mission?</h2>
-          <p className="text-xl text-neutral-400 max-w-2xl">Let's connect to build something equally impactful. My inbox is always open for new challenges.</p>
+          <p className="text-xl text-foreground/60 max-w-2xl">Let's connect to build something equally impactful. My inbox is always open for new challenges.</p>
           <div className="flex flex-wrap gap-4 mt-4">
-            <a href="mailto:bakki.mahesh5263@gmail.com" className="px-10 py-5 bg-white text-black font-bold rounded-full hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] transition-all">Start a Conversation</a>
+            <a href="mailto:bakki.mahesh5263@gmail.com" className="px-10 py-5 bg-foreground text-background font-bold rounded-full shadow-2xl transition-all">Start a Conversation</a>
           </div>
         </motion.div>
       </section>

@@ -6,12 +6,11 @@ import { ExternalLink, Code, BookOpen } from "lucide-react";
 import Link from "next/link";
 
 const projects = [
-  // ... (keeping original project data)
   {
     id: "manakrishi",
-    title: "Manakrishi App",
-    description: "Agri-tech platform enabling precision drone spraying, safer operations, and better farm outcomes.",
-    tech: ["React Native", "Node.js", "AWS"],
+    title: "Manakrishi Platform",
+    description: "An advanced agri-tech ecosystem enabling precision drone operations and data-driven farming insights for scalable agriculture.",
+    tech: ["React Native", "Node.js", "AWS Architecture"],
     gradient: "from-emerald-500/20 to-teal-500/20",
     color: "#10b981",
     image: "/portfolio1assests/work-1.png",
@@ -19,9 +18,9 @@ const projects = [
   },
   {
     id: "prolance",
-    title: "Prolance",
-    description: "Professional networking platform built to help users create meaningful connections and growth opportunities.",
-    tech: ["Next.js", "Node.js", "MongoDB"],
+    title: "Prolance Network",
+    description: "A professional networking hub architected for meaningful industry connections and career growth through intelligent matching.",
+    tech: ["Next.js 14", "MongoDB", "Auth.js"],
     gradient: "from-blue-500/20 to-indigo-500/20",
     color: "#3b82f6",
     image: "/portfolio1assests/prolance.png",
@@ -29,9 +28,9 @@ const projects = [
   },
   {
     id: "visaensure",
-    title: "VisaEnsure",
-    description: "Global visa assistance platform with AI-powered document validation and a student-first experience.",
-    tech: ["Next.js", "Tailwind CSS", "Vercel"],
+    title: "VisaEnsure Global",
+    description: "Enterprise visa assistance platform featuring AI-driven document verification and a streamlined student immigration workflow.",
+    tech: ["Next.js", "Tailwind", "Cloudfront"],
     gradient: "from-purple-500/20 to-pink-500/20",
     color: "#a855f7",
     image: "/portfolio1assests/visaensure.png",
@@ -39,9 +38,9 @@ const projects = [
   },
   {
     id: "3d-portfolio",
-    title: "3D Portfolio Website",
-    description: "Immersive 3D portfolio experience crafted with modern web technologies and cinematic motion design.",
-    tech: ["Next.js", "Three.js", "Framer Motion"],
+    title: "Cinematic 3D Portfolio",
+    description: "A high-performance immersive experience utilizing Three.js and Framer Motion to showcase technical artistry and design depth.",
+    tech: ["Three.js", "GSAP", "React Three Fiber"],
     gradient: "from-orange-500/20 to-red-500/20",
     color: "#f97316",
     image: "/portfolio1assests/my3dportfolioimage.png",
@@ -49,9 +48,9 @@ const projects = [
   },
   {
     id: "elegance-events",
-    title: "Elegance Events",
-    description: "End-to-end event management platform with an admin suite for operations and insights.",
-    tech: ["React", "Node.js", "MongoDB"],
+    title: "Elegance Suite",
+    description: "Comprehensive event management infrastructure with real-time analytics and an end-to-end operational dashboard.",
+    tech: ["React", "Express", "Chart.js"],
     gradient: "from-cyan-500/20 to-blue-500/20",
     color: "#06b6d4",
     image: "/portfolio1assests/work-4.png",
@@ -59,9 +58,9 @@ const projects = [
   },
   {
     id: "cloud-architecture",
-    title: "Cloud Architecture",
-    description: "Enterprise-style 3-tier AWS architecture focused on high availability, security, and resilience.",
-    tech: ["EC2", "VPC", "RDS DB"],
+    title: "3-Tier AWS Architecture",
+    description: "A production-grade cloud blueprint focused on high availability, disaster recovery, and multi-region resilience.",
+    tech: ["VPC", "EC2 Auto-scaling", "RDS"],
     gradient: "from-yellow-500/20 to-orange-500/20",
     color: "#eab308",
     image: "/portfolio1assests/work-3.png",
@@ -70,7 +69,6 @@ const projects = [
 ];
 
 function Card({ project, i }: { project: any, i: number }) {
-  const cardRef = useRef<HTMLDivElement>(null);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -82,52 +80,53 @@ function Card({ project, i }: { project: any, i: number }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50 }}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: i * 0.1, duration: 0.8 }}
       onMouseMove={handleMouseMove}
-      className="group relative rounded-3xl p-px bg-white/10 hover:bg-white/20 transition-colors duration-500 overflow-hidden"
+      className="group relative rounded-[2.5rem] p-px bg-foreground/5 hover:bg-foreground/10 transition-all duration-500 overflow-hidden border border-foreground/5"
     >
       <motion.div
-        className="pointer-events-none absolute -inset-px rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        className="pointer-events-none absolute -inset-px rounded-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
         style={{
           background: useMotionTemplate`
             radial-gradient(
-              450px circle at ${mouseX}px ${mouseY}px,
-              ${project.color}22,
+              500px circle at ${mouseX}px ${mouseY}px,
+              ${project.color}15,
               transparent 80%
             )
           `,
         }}
       />
       
-      <div className="relative h-full bg-neutral-950/90 backdrop-blur-3xl rounded-[23px] p-8 flex flex-col justify-between overflow-hidden">
-        <div className="space-y-6">
-          <div className="h-48 w-full bg-neutral-900 rounded-2xl relative overflow-hidden flex items-center justify-center border border-white/5">
-            <img src={project.image} alt={project.title} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" />
+      <div className="relative h-full bg-background/40 backdrop-blur-xl rounded-[calc(2.5rem-1px)] p-8 flex flex-col justify-between overflow-hidden">
+        <div className="space-y-8">
+          <div className="h-56 w-full bg-foreground/5 rounded-3xl relative overflow-hidden border border-foreground/5 shadow-inner">
+            <img src={project.image} alt={project.title} className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-100 group-hover:scale-105 transition-all duration-1000 ease-out" />
             
-            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-4">
-               <Link href={`/case-study/${project.id}`} className="px-6 py-2 bg-white text-black text-sm font-bold rounded-full flex items-center gap-2 hover:scale-105 transition-transform shadow-2xl">
-                 <BookOpen size={16} /> View Case Study
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col items-center justify-center gap-4 px-6 text-center">
+               <Link href={`/case-study/${project.id}`} className="px-8 py-3 bg-foreground text-background text-xs font-bold rounded-2xl flex items-center gap-2 hover:scale-105 transition-all active:scale-95 shadow-2xl">
+                 <BookOpen size={14} /> Documentation
                </Link>
-               <div className="flex gap-4">
-                <a href={project.link} target="_blank" rel="noopener noreferrer" className="p-3 bg-white/10 rounded-full hover:bg-white/20 transition-colors backdrop-blur-md border border-white/10">
-                  <ExternalLink size={18} className="text-white" />
-                </a>
-               </div>
+               <a href={project.link} target="_blank" rel="noopener noreferrer" className="px-8 py-3 bg-foreground/10 backdrop-blur-md border border-foreground/20 text-foreground text-xs font-bold rounded-2xl hover:bg-foreground/20 transition-all">
+                 Live Preview
+               </a>
             </div>
           </div>
           
-          <div className="space-y-3">
-            <h3 className="text-2xl font-bold font-heading group-hover:text-white transition-colors tracking-tight">{project.title}</h3>
-            <p className="text-neutral-400 font-light text-sm leading-relaxed group-hover:text-neutral-300 transition-colors">{project.description}</p>
+          <div className="space-y-4">
+            <div className="flex justify-between items-start">
+               <h3 className="text-2xl font-bold font-heading text-foreground tracking-tight">{project.title}</h3>
+               <ArrowUpRight size={20} className="text-foreground/40 group-hover:text-foreground group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
+            </div>
+            <p className="text-foreground/60 font-light text-sm leading-relaxed">{project.description}</p>
           </div>
         </div>
 
-        <div className="mt-8 flex flex-wrap gap-2">
+        <div className="mt-10 flex flex-wrap gap-2">
           {project.tech.map((tech: string, j: number) => (
-            <span key={j} className="px-3 py-1 text-[10px] font-mono rounded-full bg-white/5 border border-white/10 text-neutral-400 group-hover:text-neutral-200 group-hover:border-white/20 transition-colors">
+            <span key={j} className="px-4 py-1.5 text-[9px] font-bold uppercase tracking-widest rounded-xl bg-foreground/5 border border-foreground/10 text-foreground/60 group-hover:text-foreground group-hover:border-foreground/20 transition-all">
               {tech}
             </span>
           ))}
@@ -138,46 +137,33 @@ function Card({ project, i }: { project: any, i: number }) {
 }
 
 import { useMotionTemplate } from "framer-motion";
+import { Tilt3D } from "../effects/HoverEffects";
+import { SectionHeading } from "./SectionHeading";
+import { ArrowUpRight } from "lucide-react";
 
 export function Projects() {
   return (
-    <section id="projects" className="py-32 px-6 flex flex-col items-center justify-center min-h-screen relative">
-      {/* Decorative side glow */}
-      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[500px] h-[500px] bg-accent-blue/5 rounded-full blur-[150px] pointer-events-none"></div>
+    <section id="projects" className="py-32 px-6 flex flex-col items-center justify-center min-h-screen relative overflow-hidden bg-background">
+      
+      {/* Background decoration */}
+      <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[600px] h-[600px] bg-accent-1/5 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-accent-2/5 rounded-full blur-[150px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto w-full space-y-20 relative z-10">
+      <div className="max-w-7xl mx-auto w-full space-y-24 relative z-10">
         
-        <div className="text-center space-y-6">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="inline-block px-4 py-1.5 rounded-full bg-accent-blue/10 border border-accent-blue/20 mb-4"
-          >
-            <span className="text-[10px] font-bold text-accent-blue uppercase tracking-[0.3em]">Project Gallery</span>
-          </motion.div>
+        <SectionHeading 
+          number="03 /"
+          badge="Product Showcase"
+          title="Featured"
+          gradientPart="Deployments"
+          description="A selection of production-grade systems engineered for scale, resilience, and premium user interaction."
+        />
 
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-4xl md:text-6xl font-heading font-bold tracking-tight"
-          >
-            Featured <span className="text-gradient">Work</span>
-          </motion.h2>
-          <motion.p 
-             initial={{ opacity: 0 }}
-             whileInView={{ opacity: 1 }}
-             viewport={{ once: true }}
-             className="text-neutral-400 font-light max-w-2xl mx-auto text-lg leading-relaxed"
-          >
-            A curated selection of high-impact applications focused on architecture, scalability, and premium user experience.
-          </motion.p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           {projects.map((project, i) => (
-            <Card key={i} project={project} i={i} />
+            <Tilt3D key={i} className="w-full">
+              <Card project={project} i={i} />
+            </Tilt3D>
           ))}
         </div>
       </div>

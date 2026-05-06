@@ -1,6 +1,14 @@
 @import "tailwindcss";
 
 :root {
+  --background: #ffffff;
+  --foreground: #0a0a0a;
+  --primary: #f5f5f5;
+  --accent-blue: #2563eb;
+  --accent-purple: #7c3aed;
+}
+
+.dark {
   --background: #0a0a0a;
   --foreground: #ededed;
   --primary: #0f0f0f;
@@ -16,14 +24,48 @@
   --color-accent-purple: var(--accent-purple);
   --font-sans: var(--font-inter);
   --font-heading: var(--font-outfit);
+
+  --animate-tilt: tilt 10s infinite linear;
+  --animate-shockwave: shockwave 2s infinite cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-gradient-x: gradient-x 3s ease infinite;
+  --animate-grain: grain 8s steps(10) infinite;
+
+  @keyframes grain {
+    0%, 100% { transform: translate(0, 0); }
+    10% { transform: translate(-5%, -10%); }
+    20% { transform: translate(-15%, 5%); }
+    30% { transform: translate(7%, -25%); }
+    40% { transform: translate(-5%, 25%); }
+    50% { transform: translate(-15%, 10%); }
+    60% { transform: translate(15%, 0%); }
+    70% { transform: translate(0%, 15%); }
+    80% { transform: translate(3%, 35%); }
+    90% { transform: translate(-10%, 10%); }
+  }
+
+  @keyframes tilt {
+    0%, 50%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(1deg); }
+    75% { transform: rotate(-1deg); }
+  }
+  
+  @keyframes shockwave {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); opacity: 1; }
+    100% { transform: scale(2); box-shadow: 0 0 0 20px rgba(59, 130, 246, 0); opacity: 0; }
+  }
+  
+  @keyframes gradient-x {
+    0%, 100% { background-size: 200% 200%; background-position: left center; }
+    50% { background-size: 200% 200%; background-position: right center; }
+  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), sans-serif;
-  scroll-behavior: smooth;
   overflow-x: hidden;
+  transition: background-color 0.5s ease, color 0.5s ease;
 }
 
 ::selection {

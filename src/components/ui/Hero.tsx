@@ -4,6 +4,11 @@ import { motion, Variants, useSpring, useTransform } from "framer-motion";
 import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import Magnetic from "./Magnetic";
+import { FloatingParticles } from "../effects/Ambient";
+import { BlurReveal, FadeUp } from "../effects/EnterAnimations";
+import { GradientText, Typewriter } from "../effects/TextEffects";
+import { SlideFillButton, ShockwaveButton } from "../effects/ButtonEffects";
+import { MagneticLift } from "../effects/HoverEffects";
 
 export function Hero() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -22,164 +27,167 @@ export function Hero() {
     return () => window.removeEventListener("mousemove", updateMousePosition);
   }, [mouseX, mouseY]);
 
-  const rotateX = useTransform(mouseY, [-500, 500], [5, -5]);
-  const rotateY = useTransform(mouseX, [-500, 500], [-5, 5]);
-
-  const titleVariants: Variants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, staggerChildren: 0.2 } },
-  };
-
-  const letterVariants: Variants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-  };
+  const rotateX = useTransform(mouseY, [-500, 500], [7, -7]);
+  const rotateY = useTransform(mouseX, [-500, 500], [-7, 7]);
 
   return (
     <section className="relative h-screen flex flex-col justify-center items-center overflow-hidden w-full">
-      {/* Background Gradient responding to mouse cursor */}
+      <FloatingParticles count={1200} color="#3b82f6" />
+      
+      {/* Dynamic Ambient Background */}
       <div 
-        className="pointer-events-none absolute inset-0 transition-all duration-300 ease-out"
+        className="pointer-events-none absolute inset-0 transition-opacity duration-1000"
         style={{
-          background: `radial-gradient(800px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(59, 130, 246, 0.15), transparent 80%)`,
+          background: `radial-gradient(1000px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(59, 130, 246, 0.12), transparent 70%)`,
         }}
       />
 
-      <div className="z-10 max-w-screen-2xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center px-6 md:px-12">
+      <div className="z-10 max-w-screen-2xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center px-6 md:px-12 lg:px-20">
+        
+        {/* Text Content */}
         <div className="text-center lg:text-left max-w-3xl mx-auto lg:mx-0 z-20">
-          <motion.div initial="hidden" animate="visible" variants={titleVariants} className="flex flex-wrap justify-center lg:justify-start gap-[0.4em] text-4xl md:text-6xl lg:text-6xl xl:text-7xl font-heading font-bold tracking-tight mb-8">
-            {["Architecting", "the", "future", "of", "cloud", "&", "digital", "experiences."].map((word, index) => (
-              <motion.span key={index} variants={letterVariants} className="inline-block hover:text-accent-blue transition-colors duration-300">
-                {(word === "cloud" || word === "digital") ? <span className="text-gradient drop-shadow-lg">{word}</span> : word}
-              </motion.span>
-            ))}
-          </motion.div>
-          
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1, duration: 1 }}
-            className="text-neutral-400 text-lg md:text-xl max-w-xl mx-auto lg:mx-0 font-sans font-light leading-relaxed"
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="flex items-center justify-center lg:justify-start gap-3 mb-6"
           >
-            I design and deliver end-to-end solutions using AWS, React, and Node.js, combining clean architecture with high-impact product engineering.
-          </motion.p>
+            <div className="h-px w-8 bg-accent-blue/50" />
+            <span className="text-[10px] font-bold text-accent-blue uppercase tracking-[0.4em] font-mono">Mahesh Bakki / Portfolio 2026</span>
+          </motion.div>
+
+          <BlurReveal delay={0.2} className="mb-8">
+            <h1 className="flex flex-wrap justify-center lg:justify-start gap-x-[0.3em] gap-y-[0.1em] text-5xl md:text-7xl lg:text-7xl xl:text-8xl font-heading font-bold tracking-tight leading-[0.95]">
+              Engineering <GradientText text="Intelligent" /> & <GradientText text="Scalable" /> Ecosystems.
+            </h1>
+          </BlurReveal>
+          
+          <FadeUp delay={0.8}>
+            <div className="space-y-6">
+              <p className="text-foreground/60 text-lg md:text-xl max-w-xl mx-auto lg:mx-0 font-sans font-light leading-relaxed">
+                I bridge the gap between complex <span className="text-foreground font-medium">Cloud Architecture</span> and high-fidelity <span className="text-foreground font-medium">Product Engineering</span>. Specializing in AWS, React, and Node.js.
+              </p>
+              
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 text-[10px] font-mono text-foreground/40 uppercase tracking-widest">
+                <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-blue-500/50" /> AWS Certified</span>
+                <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-purple-500/50" /> Full-Stack Expert</span>
+                <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500/50" /> Open to Innovation</span>
+              </div>
+            </div>
+          </FadeUp>
           
           <motion.div
              initial={{ opacity: 0, y: 20 }}
              animate={{ opacity: 1, y: 0 }}
-             transition={{ delay: 1.5, duration: 0.8 }}
-             className="mt-10 flex items-center justify-center lg:justify-start gap-6"
+             transition={{ delay: 1.2, duration: 0.8 }}
+             className="mt-12 flex flex-wrap items-center justify-center lg:justify-start gap-6"
           >
-             <Magnetic>
-                <a href="#projects" className="group px-8 py-4 bg-white text-black font-semibold rounded-full hover:scale-105 transition-transform shadow-[0_0_20px_rgba(255,255,255,0.3)] flex items-center gap-2">
-                  View Projects
-                </a>
-             </Magnetic>
-             <Magnetic>
-                <a href="#contact" className="px-8 py-4 border border-white/20 text-white font-semibold rounded-full hover:bg-white/5 transition-colors">
-                  Contact Me
-                </a>
-             </Magnetic>
+             <MagneticLift>
+                <SlideFillButton className="border-foreground/20 hover:border-foreground text-foreground rounded-2xl px-10 py-4 text-sm font-bold">
+                  <a href="#projects" className="flex items-center gap-2">View My Arsenal</a>
+                </SlideFillButton>
+             </MagneticLift>
+             <MagneticLift>
+                <ShockwaveButton className="bg-foreground/5 border border-foreground/10 text-foreground rounded-2xl px-10 py-4 text-sm font-bold hover:bg-foreground/10 transition-colors backdrop-blur-xl">
+                  <a href="#contact">Get in Touch</a>
+                </ShockwaveButton>
+             </MagneticLift>
           </motion.div>
         </div>
 
+        {/* Visual Content */}
         <motion.div 
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, delay: 0.4 }}
           className="relative hidden lg:flex justify-center items-center z-10"
         >
           <motion.div 
-            style={{ rotateX, rotateY, perspective: 1000 }}
-            className="relative w-full max-w-[780px]"
+            style={{ rotateX, rotateY, perspective: 1500 }}
+            className="relative w-full max-w-[600px] aspect-square flex items-center justify-center"
           >
-            {/* Ambient Background Glows */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-accent-blue/10 rounded-full blur-[180px] animate-pulse"></div>
+            {/* Background Layers */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.15)_0%,transparent_70%)] animate-pulse" />
+            <div className="absolute inset-0 border border-white/[0.03] rounded-full rotate-45 scale-110" />
+            <div className="absolute inset-0 border border-white/[0.03] rounded-full -rotate-12 scale-125" />
             
-            {/* Image Container - Balanced Scale */}
-            <div className="relative z-10 w-full group">
+            {/* Subject Image */}
+            <div className="relative z-10 w-full group overflow-visible">
                 <motion.img 
                   src="/portfolio1assests/maheshmain.png" 
                   alt="Mahesh Profile" 
-                  className="w-full h-auto object-contain drop-shadow-[0_40px_100px_rgba(0,0,0,0.8)] filter contrast-[1.02] brightness-[1.05]"
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ duration: 0.4 }}
+                  className="w-full h-auto object-contain drop-shadow-[0_40px_100px_rgba(0,0,0,0.8)] filter brightness-[1.05] contrast-[1.05]"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
                 />
                 
-                {/* Status Indicator */}
+                {/* Status Floating Label */}
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.6 }}
-                  className="absolute top-4 -right-4 px-5 py-2.5 rounded-full bg-neutral-900/95 backdrop-blur-3xl border border-white/10 flex items-center gap-2.5 shadow-2xl z-30"
+                  transition={{ delay: 1.5 }}
+                  className="absolute -top-6 right-0 px-6 py-3 rounded-2xl bg-background/90 backdrop-blur-3xl border border-foreground/10 flex items-center gap-3 shadow-2xl z-30"
                 >
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10b981]"></span>
-                  <span className="text-[10px] font-bold text-white uppercase tracking-widest leading-none">Status: Available</span>
+                  <div className="relative">
+                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping absolute inset-0"></div>
+                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 relative"></div>
+                  </div>
+                  <span className="text-[10px] font-bold text-foreground uppercase tracking-[0.2em] leading-none">Ready for New Challenges</span>
                 </motion.div>
 
-                {/* Technical Label - Bottom Right, well spaced */}
+                {/* Floating Tech Stack Indicator */}
                 <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 1.8 }}
-                  className="absolute bottom-4 right-0 max-w-[260px] text-right z-30"
+                  className="absolute bottom-10 -left-10 z-30 p-6 rounded-3xl bg-background/80 backdrop-blur-2xl border border-foreground/10 shadow-2xl min-w-[200px]"
                 >
-                   <div className="flex flex-col gap-1.5 items-end bg-neutral-950/70 backdrop-blur-3xl p-5 rounded-2xl border border-white/10 shadow-2xl">
-                      <p className="text-[10px] font-mono text-accent-blue font-bold uppercase tracking-[0.2em] leading-none mb-1">Architecture v3.0</p>
-                      <div className="h-px w-10 bg-accent-blue/50 mb-2"></div>
-                      <p className="text-[13px] font-medium text-white/90 leading-tight">
-                        Pioneering high-scale digital solutions through cloud-native engineering.
-                      </p>
+                   <div className="space-y-4">
+                      <p className="text-[9px] font-mono text-accent-blue font-bold uppercase tracking-[0.3em]">Core Stack / v.26</p>
+                      <div className="flex flex-wrap gap-2">
+                        {['AWS', 'Next.js', 'Node'].map((tech) => (
+                          <span key={tech} className="px-2 py-1 rounded-md bg-foreground/5 border border-foreground/10 text-[9px] text-foreground/70 font-bold uppercase tracking-widest">{tech}</span>
+                        ))}
+                      </div>
                    </div>
                 </motion.div>
             </div>
             
-            {/* Statistics Badge - Top Leftish */}
+            {/* Experience Counter Badge */}
             <motion.div 
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.8, duration: 0.6 }}
-              whileHover={{ scale: 1.05 }}
-              style={{ translateZ: 50 }}
-              className="absolute -top-10 -left-10 z-20 p-6 rounded-3xl bg-neutral-950/90 backdrop-blur-3xl border border-white/10 shadow-2xl flex flex-col items-center min-w-[140px]"
+              whileHover={{ scale: 1.1, rotate: -5 }}
+              className="absolute top-1/4 -right-12 z-20 p-8 rounded-[2.5rem] bg-background/90 backdrop-blur-3xl border border-foreground/10 shadow-2xl flex flex-col items-center"
             >
               <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-gradient">5+</span>
-                <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-tighter">Units</span>
+                <span className="text-5xl font-bold text-gradient">07+</span>
               </div>
-              <p className="text-[9px] font-black text-neutral-500 uppercase tracking-[0.2em] mt-1 text-center leading-tight">
-                Live Products<br/>Deployed
+              <p className="text-[8px] font-black text-foreground/40 uppercase tracking-[0.3em] mt-2 text-center leading-tight">
+                Flagship Projects<br/>Successfully Built
               </p>
-            </motion.div>
-
-            {/* Experience Badge - Middle Left */}
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1, duration: 0.6 }}
-              whileHover={{ scale: 1.05 }}
-              style={{ translateZ: 70 }}
-              className="absolute top-1/2 -left-20 -translate-y-1/2 z-20 px-6 py-4 rounded-2xl bg-neutral-950/90 backdrop-blur-3xl border border-white/10 shadow-2xl flex items-center gap-4"
-            >
-              <div className="w-10 h-10 rounded-full bg-accent-blue/10 border border-white/10 flex items-center justify-center">
-                 <div className="w-2.5 h-2.5 rounded-full bg-accent-blue animate-pulse"></div>
-              </div>
-              <div>
-                <p className="text-[9px] text-neutral-400 font-bold uppercase tracking-widest leading-none mb-1">Expertise</p>
-                <p className="text-sm font-bold text-white leading-none">Full-Stack Lead</p>
-              </div>
             </motion.div>
           </motion.div>
         </motion.div>
       </div>
 
+      {/* Explore Trigger */}
       <Magnetic>
         <motion.div 
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2, duration: 1 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce flex flex-col items-center gap-2 text-neutral-500 cursor-pointer"
+          initial={{ opacity: 0 }} 
+          animate={{ opacity: 1 }} 
+          transition={{ delay: 2.2, duration: 1 }}
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 text-neutral-500 cursor-pointer group"
+          onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
         >
-          <span className="text-sm uppercase tracking-widest">Scroll to explore</span>
-          <ChevronDown size={24} />
+          <span className="text-[10px] font-bold uppercase tracking-[0.5em] group-hover:text-white transition-colors">Scroll to Discover</span>
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <ChevronDown size={20} className="group-hover:text-accent-blue transition-colors" />
+          </motion.div>
         </motion.div>
       </Magnetic>
     </section>

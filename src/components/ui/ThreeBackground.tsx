@@ -1,11 +1,13 @@
 "use client";
 
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useEffect, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { Points, PointMaterial } from "@react-three/drei";
+import { useTheme } from "next-themes";
 
 function ParticleField() {
+  const { theme } = useTheme();
   const ref = useRef<THREE.Points>(null);
   
   // Generate particles
@@ -31,11 +33,11 @@ function ParticleField() {
       <Points ref={ref} positions={positions} stride={3} frustumCulled={false}>
         <PointMaterial
           transparent
-          color="#3b82f6"
+          color={theme === "dark" ? "#3b82f6" : "#2563eb"}
           size={0.015}
           sizeAttenuation={true}
           depthWrite={false}
-          opacity={0.4}
+          opacity={theme === "dark" ? 0.4 : 0.2}
         />
       </Points>
     </group>
@@ -43,17 +45,29 @@ function ParticleField() {
 }
 
 export function ThreeBackground() {
+  const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return <div className="fixed inset-0 -z-10 bg-background" />;
+
   return (
-    <div className="fixed inset-0 -z-10 bg-black">
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5 pointer-events-none" />
-      <Canvas camera={{ position: [0, 0, 1] }}>
-        <color attach="background" args={["#000000"]} />
-        <ambientLight intensity={0.5} />
+    <div className="fixed inset-0 -z-10 bg-background transition-colors duration-500">
+      <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/5 via-transparent to-accent-purple/5 pointer-events-none" />
+      <Canvas camera={{ position: [0, 0, 1] }} alpha={true}>
+        <ambientLight intensity={theme === "dark" ? 0.5 : 0.8} />
         <pointLight position={[10, 10, 10]} />
         <ParticleField />
       </Canvas>
       {/* Overlay vignette */}
-      <div className="absolute inset-0 shadow-[inset_0_0_150px_rgba(0,0,0,0.8)] pointer-events-none" />
+      <div className={`absolute inset-0 pointer-events-none transition-opacity duration-1000 ${
+        theme === "dark" 
+          ? "shadow-[inset_0_0_150px_rgba(0,0,0,0.8)] opacity-100" 
+          : "shadow-[inset_0_0_150px_rgba(0,0,0,0.05)] opacity-50"
+      }`} />
     </div>
   );
 }

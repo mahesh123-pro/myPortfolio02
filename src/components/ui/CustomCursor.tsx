@@ -28,7 +28,7 @@ export default function CustomCursor() {
 
   return (
     <motion.div
-      className="fixed top-0 left-0 w-8 h-8 rounded-full border border-accent-blue/50 pointer-events-none z-[9999] mix-blend-difference hidden lg:block"
+      className="fixed top-0 left-0 w-8 h-8 rounded-full border border-accent-2/50 pointer-events-none z-[9999] mix-blend-difference hidden lg:block"
       style={{
         x: mouseX,
         y: mouseY,

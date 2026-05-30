@@ -122,23 +122,6 @@ export function About() {
               ref={imageRef} 
               className="absolute inset-[-10%] w-[120%] h-[120%] bg-[url('/portfolio1assests/maheshmain.png')] bg-cover bg-center filter grayscale opacity-80"
             />
-            
-            <div className="absolute top-8 left-8 right-8 z-20 flex justify-between items-start">
-              <div className="px-4 py-2 rounded-full bg-background/80 backdrop-blur-xl border border-foreground/10 text-[9px] font-mono tracking-[0.3em] font-bold uppercase shadow-xl">
-                Current Status
-              </div>
-            </div>
-            
-            <div className="absolute bottom-8 left-8 right-8 z-20">
-              <div className="p-6 rounded-2xl bg-background/80 backdrop-blur-xl border border-foreground/10 shadow-2xl">
-                 <div className="flex items-center gap-3 mb-3">
-                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                    <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.3em]">Leadership</span>
-                 </div>
-                 <h4 className="text-xl font-bold font-heading">Tech Lead</h4>
-                 <p className="text-[10px] text-foreground/50 uppercase tracking-widest font-mono mt-1">@ Manakrishi (GKLT)</p>
-              </div>
-            </div>
           </div>
         </div>
 

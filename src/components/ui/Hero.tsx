@@ -158,18 +158,6 @@ export function Hero() {
               alt="Profile" 
               className="absolute inset-0 w-full h-full object-cover rounded-3xl z-10 filter grayscale opacity-90 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 ease-in-out scale-105 group-hover:scale-100 object-top"
             />
-            
-            <motion.div 
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 2, duration: 0.8 }}
-              className="absolute -left-12 top-1/4 bg-background/80 backdrop-blur-xl border border-foreground/10 p-6 rounded-2xl shadow-2xl z-30 flex gap-4 items-center"
-            >
-              <div className="text-4xl font-bold">100<span className="text-accent-blue">+</span></div>
-              <div className="text-[10px] uppercase font-bold tracking-widest text-foreground/50 leading-tight">
-                Lighthouse<br />Score
-              </div>
-            </motion.div>
           </div>
         </div>
 

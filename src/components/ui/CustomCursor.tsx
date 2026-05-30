@@ -1,43 +1,67 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { motion, useSpring } from "framer-motion";
+import { useEffect, useState, useRef } from "react";
+import gsap from "gsap";
 
 export default function CustomCursor() {
-  const [isPointer, setIsPointer] = useState(false);
-  
-  const mouseX = useSpring(0, { damping: 20, stiffness: 250 });
-  const mouseY = useSpring(0, { damping: 20, stiffness: 250 });
+  const cursorRef = useRef<HTMLDivElement>(null);
+  const followerRef = useRef<HTMLDivElement>(null);
+  const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
-      
+    const cursor = cursorRef.current;
+    const follower = followerRef.current;
+
+    // Center coordinates
+    const curPos = { x: 0, y: 0 };
+    const folPos = { x: 0, y: 0 };
+
+    const onMouseMove = (e: MouseEvent) => {
+      curPos.x = e.clientX;
+      curPos.y = e.clientY;
+
+      gsap.to(cursor, {
+        x: curPos.x,
+        y: curPos.y,
+        duration: 0.1,
+        ease: "power2.out"
+      });
+
+      gsap.to(follower, {
+        x: curPos.x,
+        y: curPos.y,
+        duration: 0.6,
+        ease: "power3.out"
+      });
+
       const target = e.target as HTMLElement;
-      setIsPointer(
+      const isPointer = 
         window.getComputedStyle(target).cursor === "pointer" ||
-        target.tagName === "A" ||
-        target.tagName === "BUTTON"
-      );
+        target.tagName.toLowerCase() === "a" ||
+        target.tagName.toLowerCase() === "button" ||
+        target.closest("a") || 
+        target.closest("button");
+      
+      setIsHovering(!!isPointer);
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [mouseX, mouseY]);
+    window.addEventListener("mousemove", onMouseMove);
+
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove);
+    };
+  }, []);
 
   return (
-    <motion.div
-      className="fixed top-0 left-0 w-8 h-8 rounded-full border border-accent-2/50 pointer-events-none z-[9999] mix-blend-difference hidden lg:block"
-      style={{
-        x: mouseX,
-        y: mouseY,
-        translateX: "-50%",
-        translateY: "-50%",
-        scale: isPointer ? 1.5 : 1,
-        backgroundColor: isPointer ? "rgba(59, 130, 246, 0.2)" : "transparent",
-      }}
-      transition={{ type: "spring", damping: 20, stiffness: 250 }}
-    />
+    <>
+      <div 
+        ref={cursorRef} 
+        className={`fixed top-0 left-0 w-2 h-2 bg-foreground rounded-full pointer-events-none z-[9999] mix-blend-difference hidden lg:block transform -translate-x-1/2 -translate-y-1/2 transition-transform duration-200 ${isHovering ? 'scale-[3]' : 'scale-100'}`}
+      />
+      <div 
+        ref={followerRef}
+        className={`fixed top-0 left-0 w-10 h-10 border border-foreground/30 bg-foreground/5 backdrop-blur-[1px] rounded-full pointer-events-none z-[9998] hidden lg:block transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${isHovering ? 'scale-150 border-foreground/50 bg-foreground/10' : 'scale-100'}`}
+      />
+    </>
   );
 }

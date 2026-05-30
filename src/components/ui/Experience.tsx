@@ -1,131 +1,154 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import { SectionHeading } from "./SectionHeading";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 import { journeyData } from "@/data/experience";
-import Link from "next/link";
-import { ArrowUpRight, Calendar, Briefcase, Building2 } from "lucide-react";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 export function Experience() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start center", "end center"]
-  });
+  const containerRef = useRef<HTMLElement>(null);
+  const lineRef = useRef<HTMLDivElement>(null);
 
-  const lineHeight = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-  const journeySteps = Object.values(journeyData);
+  useGSAP(() => {
+    // 1. Animate the central vertical line drawing down depending on scroll progress
+    gsap.fromTo(lineRef.current, 
+      { scaleY: 0 },
+      {
+        scaleY: 1,
+        transformOrigin: "top center",
+        ease: "none",
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top center",
+          end: "bottom bottom",
+          scrub: true,
+        }
+      }
+    );
+
+    // 2. Animate each experience block
+    const items = gsap.utils.toArray(".timeline-item");
+    items.forEach((item: any, i) => {
+      // Alternate animation direction for left/right
+      const isLeft = i % 2 === 0;
+      const content = item.querySelector('.timeline-content');
+      const dot = item.querySelector('.timeline-dot');
+
+      // Pop in the dot
+      gsap.from(dot, {
+        scale: 0,
+        opacity: 0,
+        duration: 0.6,
+        ease: "back.out(1.7)",
+        scrollTrigger: {
+          trigger: item,
+          start: "top 70%",
+        }
+      });
+
+      // Slide in the content card
+      gsap.from(content, {
+        x: isLeft ? -100 : 100,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: item,
+          start: "top 75%",
+        }
+      });
+    });
+
+  }, { scope: containerRef });
+
+  const experiences = Object.values(journeyData);
 
   return (
-    <section id="experience" className="py-32 px-6 min-h-screen relative overflow-hidden bg-background">
+    <section id="experience" ref={containerRef} className="relative w-full py-32 bg-background overflow-hidden relative">
       
-      {/* Ambience */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent-blue/5 rounded-full blur-[150px] pointer-events-none" />
+      {/* Background ambient lighting */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-purple-500/5 rounded-full blur-[200px] pointer-events-none"></div>
 
-      <div className="max-w-6xl mx-auto relative z-10">
-        <SectionHeading 
-          number="05 /"
-          badge="Professional Path"
-          title="The"
-          gradientPart="Evolution"
-          description="A chronological record of technical leadership, architectural growth, and continuous learning."
-        />
-        <div className="mb-24" />
-
-        <div ref={containerRef} className="relative">
-          {/* Timeline Line */}
-          <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-px bg-foreground/5 -translate-x-1/2 rounded-full overflow-hidden">
-            <motion.div 
-               style={{ height: lineHeight }}
-               className="w-full bg-gradient-to-b from-accent-blue via-accent-purple to-transparent shadow-[0_0_15px_rgba(59,130,246,0.5)]"
-            />
+      <div className="max-w-7xl mx-auto px-6 lg:px-20 mb-20 relative z-10 text-center lg:text-left">
+        <div className="flex flex-col items-center lg:items-start gap-4 mb-6">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-px bg-foreground/20"></div>
+            <span className="text-xs font-mono tracking-[0.4em] uppercase text-foreground/50 font-bold">03 — Career Path</span>
           </div>
-
-          <div className="space-y-40">
-            {journeySteps.map((item, i) => (
-              <div key={item.id} className={`relative flex flex-col md:flex-row items-center justify-between group ${i % 2 === 0 ? "md:flex-row-reverse" : ""}`}>
-                
-                {/* Year Badge - Sticky potential */}
-                <div className="absolute left-8 md:left-1/2 -translate-x-1/2 z-20 top-0 -translate-y-16 md:translate-y-0">
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    className="px-6 py-2 rounded-full bg-background border-2 border-accent-blue/30 backdrop-blur-xl text-accent-blue font-mono text-sm font-bold tracking-[0.2em] shadow-2xl flex items-center gap-2 group-hover:border-accent-blue transition-all duration-500"
-                  >
-                    <Calendar size={14} />
-                    {item.year}
-                  </motion.div>
-                </div>
-
-                {/* Node */}
-                <motion.div 
-                  initial={{ scale: 0 }}
-                  whileInView={{ scale: 1 }}
-                  viewport={{ once: true }}
-                  className="absolute left-8 md:left-1/2 w-6 h-6 rounded-full bg-background border-[3px] border-accent-blue -translate-x-1/2 z-10 group-hover:scale-125 transition-all duration-500 shadow-[0_0_30px_rgba(59,130,246,0.4)]"
-                >
-                  <div className="absolute inset-0 rounded-full bg-accent-blue opacity-0 group-hover:opacity-20 animate-ping" />
-                </motion.div>
-
-                {/* Content Card */}
-                <motion.div 
-                  initial={{ opacity: 0, x: i % 2 === 0 ? 50 : -50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ duration: 0.8, type: "spring", bounce: 0.3 }}
-                  className={`pl-24 md:pl-0 w-full md:w-[45%] ${i % 2 === 0 ? "md:text-left" : "md:text-right"}`}
-                >
-                  <Link href={`/journey/${item.id}`} className="block group/card">
-                    <div className={`p-8 md:p-10 rounded-[2.5rem] bg-foreground/5 border border-foreground/10 backdrop-blur-xl transition-all duration-500 hover:bg-foreground/10 hover:border-foreground/20 hover:translate-y-[-5px] relative overflow-hidden flex flex-col ${i % 2 === 0 ? "items-start" : "items-end"}`}>
-                      
-                      {/* Hover Gradient */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/5 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />
-                      
-                      <div className="relative z-10 space-y-6 w-full">
-                        <div className={`flex flex-col gap-2 ${i % 2 === 0 ? "items-start" : "items-end"}`}>
-                          <div className="flex items-center gap-3 text-accent-blue mb-2">
-                             <Briefcase size={20} className="opacity-60" />
-                             <span className="text-xs font-bold uppercase tracking-[0.3em]">Professional Role</span>
-                          </div>
-                          <h3 className="text-3xl md:text-4xl font-bold font-heading text-foreground tracking-tight leading-none group-hover/card:text-accent-blue transition-colors">
-                            {item.role}
-                          </h3>
-                        </div>
-
-                        <div className={`flex items-center gap-4 text-foreground/40 font-mono text-sm uppercase tracking-widest ${i % 2 === 0 ? "flex-row" : "flex-row-reverse"}`}>
-                          <Building2 size={16} />
-                          <span className="font-bold">{item.company}</span>
-                          <div className="w-1.5 h-1.5 rounded-full bg-foreground/20" />
-                          <span>Full-Time</span>
-                        </div>
-
-                        <p className={`text-foreground/60 font-light text-base leading-relaxed max-w-lg ${i % 2 === 0 ? "" : "ml-auto"}`}>
-                          {item.description}
-                        </p>
-
-                        <div className={`flex items-center gap-3 pt-4 font-bold text-xs uppercase tracking-[0.2em] group-hover/card:gap-5 transition-all ${i % 2 === 0 ? "text-accent-blue" : "flex-row-reverse text-accent-purple"}`}>
-                           <span>Read Full Story</span>
-                           <ArrowUpRight size={16} />
-                        </div>
-                      </div>
-
-                      {/* Decorative Background Icon */}
-                      <div className={`absolute -bottom-10 -right-10 opacity-[0.03] group-hover/card:opacity-[0.07] transition-opacity duration-700 pointer-events-none ${i % 2 === 0 ? "-right-10" : "-left-10"}`}>
-                        <Briefcase size={200} />
-                      </div>
-                    </div>
-                  </Link>
-                </motion.div>
-
-                {/* Spacer for MD screens */}
-                <div className="hidden md:block w-[45%]" />
-              </div>
-            ))}
-          </div>
+          <h2 className="text-4xl md:text-6xl font-heading font-black tracking-tighter mix-blend-difference">
+            THE JOURNEY.
+          </h2>
         </div>
       </div>
+
+      <div className="max-w-6xl mx-auto px-6 relative z-10">
+        <div className="relative wrap flex flex-col items-center">
+          
+          {/* Static thin line track */}
+          <div className="absolute w-[2px] h-full bg-foreground/5 left-[30px] lg:left-1/2 lg:-translate-x-1/2 rounded-full"></div>
+          
+          {/* Active colored line drawn by GSAP */}
+          <div ref={lineRef} className="absolute w-[2px] h-full bg-gradient-to-b from-blue-500 via-purple-500 to-emerald-500 left-[30px] lg:left-1/2 lg:-translate-x-1/2 rounded-full z-10"></div>
+
+          {experiences.map((exp, index) => {
+            const isLeft = index % 2 === 0;
+            return (
+              <div key={exp.id} className="timeline-item w-full flex justify-[flex-start] lg:justify-between items-center mb-16 relative pl-20 lg:pl-0">
+                
+                {/* Timeline Dot */}
+                <div className={`timeline-dot absolute w-10 h-10 rounded-full border-4 border-background bg-foreground shadow-xl z-20 left-[10px] lg:left-1/2 lg:-translate-x-1/2 flex items-center justify-center`}>
+                  <div className="w-2 h-2 rounded-full bg-background"></div>
+                </div>
+
+                {/* Left Card (only visible on large screens) */}
+                <div className={`hidden lg:block w-5/12 ${isLeft ? 'text-right pr-12' : 'invisible'}`}>
+                  {isLeft && <TimelineCard exp={exp} isRight={false} />}
+                </div>
+
+                {/* Right Card */}
+                <div className={`w-full lg:w-5/12 ${!isLeft ? 'lg:pl-12 text-left' : 'lg:invisible'}`}>
+                  {(!isLeft || window.innerWidth < 1024) && <TimelineCard exp={exp} isRight={true} />}
+                </div>
+                
+              </div>
+            );
+          })}
+
+        </div>
+      </div>
+
     </section>
+  );
+}
+
+function TimelineCard({ exp, isRight }: { exp: any, isRight: boolean }) {
+  return (
+    <div className={`timeline-content bg-foreground/5 p-8 rounded-3xl border border-foreground/10 hover:bg-foreground/10 transition-colors duration-500 relative group`}>
+      <span className="text-[10px] font-mono tracking-[0.3em] font-bold text-foreground/40 uppercase mb-4 block" style={{ color: exp.color }}>
+        {exp.year}
+      </span>
+      <h3 className="text-2xl lg:text-3xl font-heading font-black mb-2 leading-tight">
+        {exp.role}
+      </h3>
+      <h4 className="text-sm font-bold uppercase tracking-widest text-foreground/60 mb-6">
+        @ {exp.company}
+      </h4>
+      <p className="text-foreground/70 font-light leading-relaxed mb-8">
+        {exp.description}
+      </p>
+
+      <div className={`flex flex-wrap gap-2 ${isRight ? 'justify-start' : 'lg:justify-end justify-start'}`}>
+        {exp.skills.map((skill: string) => (
+          <span key={skill} className="px-3 py-1 bg-background/50 border border-foreground/5 rounded-full text-[10px] font-mono uppercase tracking-widest text-foreground/70">
+            {skill}
+          </span>
+        ))}
+      </div>
+    </div>
   );
 }

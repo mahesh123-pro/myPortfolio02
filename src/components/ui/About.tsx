@@ -1,115 +1,147 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+import SplitType from "split-type";
+import { motion } from "framer-motion";
 
-import { GlowBorder } from "../effects/HoverEffects";
-import { LetterWave, GradientText } from "../effects/TextEffects";
-import { BlurReveal, FlipIn } from "../effects/EnterAnimations";
-import { ColorReveal } from "../effects/HoverEffects";
-import { SectionHeading } from "./SectionHeading";
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 export function About() {
-  const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
+  const containerRef = useRef<HTMLElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLDivElement>(null);
+  const statsRef = useRef<HTMLDivElement>(null);
 
-  const opacity = useTransform(scrollYProgress, [0, 0.3, 0.6, 1], [0, 1, 1, 0]);
+  useGSAP(() => {
+    // 1. Text reveal parsing
+    const paragraphs = textRef.current?.querySelectorAll("p");
+    
+    if (paragraphs) {
+      paragraphs.forEach((p) => {
+        const split = new SplitType(p, { types: 'lines,words' });
+        
+        gsap.from(split.words, {
+          scrollTrigger: {
+            trigger: p,
+            start: "top 80%",
+            end: "bottom 50%",
+            scrub: 1,
+          },
+          opacity: 0.1,
+          duration: 1,
+          stagger: 0.05,
+          ease: "power2.out",
+        });
+      });
+    }
+
+    // 2. Parallax Image
+    gsap.fromTo(imageRef.current,
+      { y: 100, scale: 1.1 },
+      {
+        y: -100,
+        scale: 1,
+        ease: "none",
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true
+        }
+      }
+    );
+
+    // 3. Stats Fade in
+    gsap.fromTo(".stat-card",
+      { opacity: 0, y: 50 },
+      {
+        opacity: 1,
+        y: 0,
+        stagger: 0.2,
+        duration: 1,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: statsRef.current,
+          start: "top 85%",
+        }
+      }
+    );
+
+  }, { scope: containerRef });
 
   return (
-    <section id="about" ref={ref} className="relative py-32 px-6 flex items-center justify-center min-h-screen overflow-hidden">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 lg:gap-32 items-center">
+    <section id="about" ref={containerRef} className="relative w-full min-h-screen pt-32 pb-24 overflow-hidden bg-background text-foreground flex flex-col justify-center">
+      
+      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-accent-blue/10 rounded-full blur-[150px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
+
+      <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 w-full grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 relative z-10">
         
-        {/* Bio Content */}
-        <motion.div style={{ opacity, y: useTransform(scrollYProgress, [0, 1], [50, -50]) }} className="space-y-10">
-          <div className="space-y-4">
-            <SectionHeading 
-              number="01 /"
-              badge="The Introduction"
-              title="I'm"
-              gradientPart="Mahesh Bakki."
-              centered={false}
-            />
-            <BlurReveal delay={0.2}>
-              <h3 className="text-2xl md:text-3xl font-heading font-semibold text-foreground/90">
-                <LetterWave text="Architecting resilient digital ecosystems." delay={0.1} />
-              </h3>
-            </BlurReveal>
-          </div>
-
-          <div className="space-y-6">
-            <BlurReveal delay={0.4}>
-              <p className="text-lg text-foreground/60 font-light leading-relaxed">
-                Currently spearheading technical initiatives as <span className="text-foreground font-medium">Tech Lead @ GKLT (Manakrishi)</span>, I specialize in building cloud-native applications that balance high performance with sophisticated design. 
-              </p>
-            </BlurReveal>
-            <BlurReveal delay={0.5}>
-              <p className="text-lg text-foreground/60 font-light leading-relaxed">
-                As a B-Tech student at <span className="text-foreground font-medium">MLRITM</span>, my focus lies at the intersection of Cloud Engineering and Full-Stack development. I don't just write code; I engineer systems that scale, secure, and solve real-world problems.
-              </p>
-            </BlurReveal>
-          </div>
+        <div className="lg:col-span-7 flex flex-col justify-center">
           
-          <div className="grid grid-cols-2 gap-6 pt-6">
-            <ColorReveal color="bg-blue-600/20" className="w-full">
-              <div className="p-6 rounded-3xl bg-foreground/5 border border-foreground/10 flex flex-col gap-2 hover:border-foreground/20 transition-all w-full h-full relative z-10 group">
-                <span className="text-4xl font-bold text-foreground group-hover:text-accent-blue transition-colors">04+</span>
-                <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.2em]">Years Deep in Tech</span>
-              </div>
-            </ColorReveal>
-            <ColorReveal color="bg-purple-600/20" className="w-full">
-              <div className="p-6 rounded-3xl bg-foreground/5 border border-foreground/10 flex flex-col gap-2 hover:border-foreground/20 transition-all w-full h-full relative z-10 group">
-                <span className="text-4xl font-bold text-foreground group-hover:text-accent-purple transition-colors">07+</span>
-                <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.2em]">Flagship Deploys</span>
-              </div>
-            </ColorReveal>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="flex items-center gap-4 mb-12"
+          >
+            <div className="w-12 h-px bg-foreground/20"></div>
+            <span className="text-xs font-mono tracking-[0.4em] uppercase text-foreground/50 font-bold">01 — The Architect</span>
+          </motion.div>
+
+          <div ref={textRef} className="space-y-12">
+            <p className="text-3xl sm:text-4xl md:text-5xl font-heading font-black tracking-tight leading-[1.1]">
+              Currently spearheading technical initiatives as <span className="text-accent-blue">Tech Lead @ GKLT (Manakrishi)</span>, specializing in building cloud-native applications that balance high performance with sophisticated design.
+            </p>
+            
+            <p className="text-xl md:text-2xl text-foreground/60 font-light leading-relaxed max-w-2xl">
+              As a B-Tech student at MLRITM, my focus lies at the intersection of Cloud Engineering and Full-Stack development. I don't just write code; I engineer systems that scale, secure, and solve real-world problems seamlessly.
+            </p>
           </div>
-        </motion.div>
 
-        {/* Visual Content */}
-        <div className="relative group flex justify-center lg:justify-end">
-          {/* Ambient Glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-accent-blue/5 rounded-full blur-[120px] pointer-events-none animate-pulse"></div>
-          
-          <GlowBorder>
-            <div className="relative h-[600px] w-full max-w-[420px] flex items-center justify-center p-3">
-              <motion.div className="relative w-full h-full flex items-center justify-center bg-neutral-900 rounded-3xl overflow-hidden shadow-2xl">
-                 <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
-                 <motion.img
-                    src="/portfolio1assests/maheshmain.png"
-                    alt="Mahesh Profile"
-                    whileHover={{ scale: 1.02 }}
-                    className="w-full h-full object-cover filter brightness-[1.1] contrast-[1.05] transition-transform duration-1000 ease-out"
-                 />
-                 
-                 {/* Tech Tags */}
-                 <div className="absolute bottom-6 left-6 right-6 flex flex-wrap gap-2 z-20">
-                    {['AWS Architect', 'Full Stack'].map((tag) => (
-                      <div key={tag} className="px-4 py-2 rounded-xl bg-black/60 backdrop-blur-xl border border-white/10 text-[10px] font-bold text-white uppercase tracking-widest shadow-xl">
-                        {tag}
-                      </div>
-                    ))}
-                 </div>
-              </motion.div>
+          <div ref={statsRef} className="grid grid-cols-2 gap-6 mt-16 lg:mt-24">
+            <div className="stat-card p-8 rounded-3xl bg-foreground/5 border border-foreground/10 hover:bg-foreground/10 transition-colors group">
+              <div className="text-5xl md:text-6xl font-black text-foreground mb-4 group-hover:text-accent-blue transition-colors">04+</div>
+              <div className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-foreground/40 leading-relaxed">Years Deep<br />in Tech</div>
             </div>
-          </GlowBorder>
-
-          {/* Leadership Badge */}
-          <FlipIn delay={0.4} className="absolute -top-10 -left-10 lg:-left-20 z-30">
-            <div className="p-8 rounded-[2.5rem] bg-background/90 backdrop-blur-3xl border border-foreground/10 shadow-2xl flex flex-col items-start min-w-[220px]">
-               <div className="flex items-center gap-3 mb-4">
-                  <div className="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                  </div>
-                  <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.3em]">Current Leadership</span>
-               </div>
-               <span className="text-2xl font-bold text-foreground leading-tight mb-1">Tech Lead</span>
-               <span className="text-xs text-foreground/40 font-medium font-mono uppercase tracking-widest">@ Manakrishi (GKLT)</span>
+            <div className="stat-card p-8 rounded-3xl bg-foreground/5 border border-foreground/10 hover:bg-foreground/10 transition-colors group">
+              <div className="text-5xl md:text-6xl font-black text-foreground mb-4 group-hover:text-accent-purple transition-colors">07+</div>
+              <div className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-foreground/40 leading-relaxed">Flagship<br />Deploys</div>
             </div>
-          </FlipIn>
+          </div>
         </div>
+
+        <div className="lg:col-span-5 relative flex items-center justify-center lg:justify-end h-[60vh] lg:h-auto">
+          <div className="relative w-full max-w-[450px] aspect-[3/4] rounded-[2rem] overflow-hidden bg-background/5 border border-foreground/10">
+            <div className="absolute inset-0 bg-black/20 z-10 mix-blend-multiply"></div>
+            <div 
+              ref={imageRef} 
+              className="absolute inset-[-10%] w-[120%] h-[120%] bg-[url('/portfolio1assests/maheshmain.png')] bg-cover bg-center filter grayscale opacity-80"
+            />
+            
+            <div className="absolute top-8 left-8 right-8 z-20 flex justify-between items-start">
+              <div className="px-4 py-2 rounded-full bg-background/80 backdrop-blur-xl border border-foreground/10 text-[9px] font-mono tracking-[0.3em] font-bold uppercase shadow-xl">
+                Current Status
+              </div>
+            </div>
+            
+            <div className="absolute bottom-8 left-8 right-8 z-20">
+              <div className="p-6 rounded-2xl bg-background/80 backdrop-blur-xl border border-foreground/10 shadow-2xl">
+                 <div className="flex items-center gap-3 mb-3">
+                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                    <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.3em]">Leadership</span>
+                 </div>
+                 <h4 className="text-xl font-bold font-heading">Tech Lead</h4>
+                 <p className="text-[10px] text-foreground/50 uppercase tracking-widest font-mono mt-1">@ Manakrishi (GKLT)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
   );

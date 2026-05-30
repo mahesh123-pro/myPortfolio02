@@ -1,83 +1,155 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion } from "framer-motion";
-import { SectionHeading } from "./SectionHeading";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 const skills = [
-  { category: "Frontend Engineering", items: ["React.js", "Next.js 14", "TypeScript", "Tailwind CSS", "Framer Motion", "Three.js"] },
-  { category: "Backend & Systems", items: ["Node.js", "Python", "RESTful APIs", "PostgreSQL", "MongoDB", "Redis"] },
-  { category: "Cloud & DevOps", items: ["AWS (EC2, S3, RDS)", "Docker", "GitHub Actions", "CI/CD Pipelines", "Linux Mastery"] }
+  { category: "Frontend Engineering", items: ["React.js", "Next.js 14", "TypeScript", "Tailwind CSS", "Framer Motion", "Three.js", "GSAP"] },
+  { category: "Backend & Systems", items: ["Node.js", "Python", "RESTful APIs", "PostgreSQL", "MongoDB", "Redis", "WebSockets"] },
+  { category: "Cloud & DevOps", items: ["AWS Architecting", "Docker Containers", "GitHub Actions", "CI/CD Pipelines", "Linux Mastery", "Terraform"] }
 ];
 
 export function Skills() {
+  const containerRef = useRef<HTMLElement>(null);
+  const cardsRef = useRef<HTMLDivElement[]>([]);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // 1. Reveal container title
+      gsap.fromTo(".skills-header", 
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top 80%"
+          }
+        }
+      );
+
+      // 2. Animate cards with a tilt effect
+      cardsRef.current.forEach((card, i) => {
+        gsap.fromTo(card,
+          { opacity: 0, scale: 0.9, y: 50 },
+          {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: containerRef.current,
+              start: "top 60%"
+            },
+            delay: i * 0.15
+          }
+        );
+
+        // Interactive hover 3D tilt
+        card.addEventListener("mousemove", (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+          const rotateX = ((y - centerY) / centerY) * -10;
+          const rotateY = ((x - centerX) / centerX) * 10;
+
+          gsap.to(card, {
+            rotateX,
+            rotateY,
+            transformPerspective: 1000,
+            ease: "power1.out",
+            duration: 0.4
+          });
+          
+          // Glow effect follows cursor
+          const glow = card.querySelector('.glow-effect') as HTMLElement;
+          if(glow) {
+            gsap.to(glow, {
+              x,
+              y,
+              opacity: 1,
+              duration: 0.2
+            });
+          }
+        });
+
+        card.addEventListener("mouseleave", () => {
+          gsap.to(card, {
+            rotateX: 0,
+            rotateY: 0,
+            ease: "elastic.out(1, 0.3)",
+            duration: 1.5
+          });
+          const glow = card.querySelector('.glow-effect') as HTMLElement;
+          if(glow) {
+            gsap.to(glow, { opacity: 0, duration: 0.4 });
+          }
+        });
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section id="skills" className="py-32 px-6 flex flex-col items-center justify-center min-h-screen relative overflow-hidden bg-background">
+    <section id="skills" ref={containerRef} className="py-32 px-6 flex flex-col items-center justify-center min-h-screen relative overflow-hidden bg-background">
       
       {/* Background decoration */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-accent-2/5 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-30 mix-blend-screen" 
+           style={{ backgroundImage: 'radial-gradient(circle at 10% 90%, rgba(139,92,246,0.15) 0%, transparent 50%)' }} />
 
       <div className="max-w-7xl mx-auto w-full z-10 text-center space-y-24">
         
-        <SectionHeading 
-          number="04 /"
-          badge="Technical Stack"
-          title="The"
-          gradientPart="Arsenal"
-          description="A curated selection of modern technologies I leverage to build resilient and high-performance digital products."
-        />
+        <div className="skills-header flex flex-col items-center gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-px bg-foreground/20"></div>
+            <span className="text-xs font-mono tracking-[0.4em] uppercase text-foreground/50 font-bold">04 — Core Competencies</span>
+            <div className="w-12 h-px bg-foreground/20"></div>
+          </div>
+          <h2 className="text-4xl md:text-7xl font-heading font-black tracking-tighter uppercase mix-blend-difference leading-[0.9]">
+            The <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500">Arsenal.</span>
+          </h2>
+          <p className="text-foreground/50 text-sm md:text-base font-light max-w-xl font-mono mt-4">
+            Interactive, performant, and scalable technologies spanning the entire modern stack.
+          </p>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 text-left">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left z-20 perspective-[1000px]">
           {skills.map((skillGroup, i) => (
-            <motion.div
+            <div
                key={i}
-               initial={{ opacity: 0, y: 20 }}
-               whileInView={{ opacity: 1, y: 0 }}
-               viewport={{ once: true }}
-               transition={{ delay: i * 0.1, duration: 0.6 }}
-               className="p-10 rounded-[2.5rem] bg-foreground/5 border border-foreground/10 backdrop-blur-md hover:border-foreground/20 hover:bg-foreground/10 transition-all duration-500 group"
+               ref={(el) => { if(el) cardsRef.current[i] = el; }}
+               className="relative p-10 rounded-[2.5rem] bg-foreground/5 border border-foreground/10 backdrop-blur-3xl overflow-hidden group shadow-2xl transform-style-3d cursor-crosshair"
             >
-               <h3 className="text-xl font-bold font-heading text-foreground mb-8 border-b border-foreground/10 pb-6 group-hover:text-accent-blue transition-colors tracking-tight">{skillGroup.category}</h3>
-               <div className="flex flex-wrap gap-3">
+               <div className="glow-effect absolute w-64 h-64 bg-accent-blue/30 rounded-full blur-[80px] pointer-events-none opacity-0 -translate-x-1/2 -translate-y-1/2 z-0 mix-blend-screen"></div>
+
+               <h3 className="text-2xl font-black font-heading text-foreground mb-8 border-b border-foreground/10 pb-6 transition-colors tracking-tight relative z-10">
+                 {skillGroup.category}
+               </h3>
+               
+               <div className="flex flex-wrap gap-2 relative z-10">
                   {skillGroup.items.map((item, j) => (
                     <motion.div
                       key={j}
                       whileHover={{ scale: 1.05, y: -2 }}
-                      className="px-4 py-2 bg-foreground/5 border border-foreground/10 rounded-xl text-[11px] text-foreground/40 font-bold uppercase tracking-widest hover:border-accent-blue/50 hover:text-foreground transition-all cursor-crosshair shadow-sm"
+                      className="px-4 py-2 bg-background/80 border border-foreground/10 rounded-xl text-[10px] text-foreground/70 font-mono font-bold uppercase tracking-widest hover:border-accent-blue hover:text-foreground transition-colors shadow-sm"
                     >
                       {item}
                     </motion.div>
                  ))}
                </div>
-            </motion.div>
+            </div>
           ))}
-        </div>
-
-        {/* Visual Architecture Representation */}
-        <div className="mt-20 h-[350px] w-full rounded-[3rem] border border-foreground/5 bg-gradient-to-b from-transparent to-foreground/5 relative overflow-hidden flex items-center justify-center">
-             <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
-             
-             {/* Center Node */}
-             <motion.div 
-               animate={{ boxShadow: ["0 0 20px rgba(59,130,246,0.1)", "0 0 60px rgba(139,92,246,0.3)", "0 0 20px rgba(59,130,246,0.1)"] }}
-               transition={{ duration: 4, repeat: Infinity }}
-               className="w-24 h-24 bg-background border-2 border-accent-blue/20 rounded-3xl flex items-center justify-center z-10 shadow-2xl"
-             >
-                <span className="font-bold text-xs uppercase tracking-[0.3em] text-gradient">Core</span>
-             </motion.div>
-
-             {/* Orbiting Tech Rings */}
-             {[0, 1, 2, 3].map((i) => (
-                <motion.div 
-                  key={i}
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 25 + i * 8, repeat: Infinity, ease: "linear" }}
-                  className="absolute"
-                  style={{ width: `${250 + i * 120}px`, height: `${250 + i * 120}px` }}
-                >
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-foreground/10 rounded-full border border-foreground/20 shadow-[0_0_10px_rgba(var(--foreground-rgb),0.1)]" />
-                  <div className="w-full h-full rounded-full border border-foreground/[0.03]" />
-                </motion.div>
-             ))}
         </div>
 
       </div>

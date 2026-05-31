@@ -70,13 +70,13 @@ export function Testimonials() {
   }, []);
 
   return (
-    <section id="testimonials" ref={containerRef} className="py-32 px-6 flex flex-col items-center justify-center relative overflow-hidden bg-background">
+    <section id="testimonials" ref={containerRef} className="py-32 flex flex-col items-center justify-center relative overflow-hidden bg-background">
       
       {/* Background Ambience */}
       <div className="absolute inset-0 pointer-events-none mix-blend-screen opacity-[0.05]"
            style={{ backgroundImage: 'radial-gradient(circle at 0% 100%, rgba(255,255,255,1) 0%, transparent 60%)' }} />
 
-      <div className="max-w-7xl mx-auto w-full space-y-24 relative z-10">
+      <div className="max-w-7xl mx-auto w-full px-6 md:px-12 lg:px-20 space-y-24 relative z-10">
         
         <div className="test-header flex flex-col items-center text-center gap-4">
           <div className="flex items-center gap-4">

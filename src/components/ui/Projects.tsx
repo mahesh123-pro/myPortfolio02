@@ -1,16 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
-import { ExternalLink, Code, MoveRight } from "lucide-react";
+import { useRef } from "react";
+import { ExternalLink, Code } from "lucide-react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
+import { motion, useScroll, useTransform } from "framer-motion";
 
 const projects = [
   {
@@ -60,146 +53,118 @@ const projects = [
   }
 ];
 
-export function Projects() {
-  const containerRef = useRef<HTMLElement>(null);
-  const scrollWrapperRef = useRef<HTMLDivElement>(null);
-  const horizontalPanelRef = useRef<HTMLDivElement>(null);
+const ProjectCard = ({ project, index, total }: { project: any, index: number, total: number }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+  
+  // Track scroll progress of this specific card to scale it down when scrolling past
+  const { scrollYProgress } = useScroll({
+    target: cardRef,
+    offset: ["start start", "end start"]
+  });
 
-  useGSAP(() => {
-    const panels = gsap.utils.toArray(".project-panel");
-    const container = containerRef.current;
-    if (!container || !horizontalPanelRef.current) return;
-
-    gsap.to(panels, {
-      xPercent: -100 * (panels.length - 1),
-      ease: "none",
-      scrollTrigger: {
-        trigger: container,
-        pin: true,
-        scrub: 1,
-        snap: 1 / (panels.length - 1),
-        start: "top top",
-        end: () => "+=" + horizontalPanelRef.current!.offsetWidth,
-      }
-    });
-
-    // Animate inner images to create a parallax effect within the horizontal scroll
-    panels.forEach((panel: any, i) => {
-      const image = panel.querySelector(".project-image");
-      if (image) {
-        gsap.fromTo(image, 
-          { x: -50, scale: 1.1 },
-          { 
-            x: 50, 
-            scale: 1, 
-            ease: "none",
-            scrollTrigger: {
-              trigger: container,
-              scrub: true,
-              start: () => "top top-=" + (i - 1) * window.innerWidth,
-              end: () => "top top-=" + (i + 1) * window.innerWidth
-            }
-          }
-        );
-      }
-    });
-
-  }, { scope: containerRef });
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.95 - (total - index) * 0.01]);
+  const opacity = useTransform(scrollYProgress, [0, 1], [1, 0.5]);
 
   return (
-    <section ref={containerRef} id="projects" className="relative h-screen w-full bg-background overflow-hidden text-foreground">
-      
-      {/* Dynamic Background */}
-      <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: "radial-gradient(ellipse at center, rgba(59,130,246,0.15) 0%, transparent 70%)" }}></div>
+    <div 
+      ref={cardRef} 
+      className="sticky top-0 h-screen w-full flex items-center justify-center p-4 md:p-8 lg:p-12 overflow-hidden" 
+      style={{ zIndex: index }}
+    >
+      <motion.div 
+        style={{ scale, opacity }}
+        className="w-full max-w-7xl h-full max-h-[85vh] lg:max-h-[800px] grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center bg-background rounded-[2rem] border border-foreground/10 p-6 md:p-10 shadow-2xl relative overflow-hidden"
+      >
+        {/* Subtle background glow */}
+        <div 
+          className="absolute inset-0 opacity-20 pointer-events-none" 
+          style={{ background: `radial-gradient(circle at 80% 20%, ${project.color}40, transparent 50%)` }} 
+        />
+        
+        {/* Project Info */}
+        <div className="lg:col-span-5 flex flex-col gap-6 lg:gap-8 z-10 relative order-2 lg:order-1 h-full justify-center">
+          <div className="space-y-2">
+            <div className="text-xs font-mono font-bold tracking-[0.3em] uppercase" style={{ color: project.color }}>
+              0{index + 1} / 0{total}
+            </div>
+            <h3 className="text-3xl md:text-5xl lg:text-6xl font-heading font-black tracking-tighter leading-none">
+              {project.title}
+            </h3>
+          </div>
+          
+          <p className="font-light text-foreground/70 text-base md:text-lg leading-relaxed">
+            {project.description}
+          </p>
 
-      {/* Sticky header for the section */}
-      <div className="absolute top-12 left-0 right-0 z-20 px-6 md:px-12 lg:px-20 flex justify-between items-center pointer-events-none">
-        <h2 className="text-2xl md:text-3xl font-heading font-black tracking-tighter uppercase uppercase mix-blend-difference">
-          Selected <span className="text-gray-500">Works / 2026</span>
-        </h2>
-        <div className="text-xs uppercase tracking-[0.3em] font-mono text-gray-400 flex items-center gap-2">
-          Scroll
-          <MoveRight className="w-4 h-4 animate-pulse" />
+          <div className="flex flex-wrap gap-2 md:gap-3">
+            {project.tech.map((t: string) => (
+              <span key={t} className="px-3 py-1.5 border border-foreground/10 rounded-full text-[10px] md:text-xs font-mono uppercase tracking-widest text-foreground/80 bg-foreground/5">
+                {t}
+              </span>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-6 mt-2">
+            <Link 
+              href={project.link} 
+              target="_blank"
+              className="group flex items-center gap-3 text-sm font-bold uppercase tracking-widest hover:text-accent-blue transition-colors"
+            >
+              <span className="w-10 h-10 rounded-full border border-foreground/20 flex items-center justify-center group-hover:border-accent-blue transition-colors bg-background">
+                <ExternalLink className="w-4 h-4 group-hover:scale-110 transition-transform" />
+              </span>
+              Live Site
+            </Link>
+            <Link 
+              href={`/case-study/${project.id}`} 
+              className="group flex items-center gap-3 text-sm font-bold uppercase tracking-widest text-foreground/50 hover:text-foreground transition-colors"
+            >
+              <Code className="w-4 h-4" />
+              Case Study
+            </Link>
+          </div>
         </div>
+
+        {/* Project Image Showcase */}
+        <div className="lg:col-span-7 w-full h-[35vh] lg:h-full relative group overflow-hidden rounded-[1.5rem] bg-foreground/5 order-1 lg:order-2">
+          <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500 z-10" />
+          
+          <img 
+            src={project.image} 
+            alt={project.title}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+
+          {/* Interactive floating cursor element */}
+          <div className="opacity-0 group-hover:opacity-100 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-background/90 backdrop-blur-md rounded-full flex items-center justify-center text-[10px] uppercase font-bold tracking-widest z-20 pointer-events-none transition-all duration-300 scale-50 group-hover:scale-100 text-foreground shadow-xl">
+            View
+          </div>
+        </div>
+
+      </motion.div>
+    </div>
+  );
+}
+
+export function Projects() {
+  return (
+    <section id="projects" className="relative w-full bg-background text-foreground pb-24">
+      {/* Sticky header for the section */}
+      <div className="sticky top-0 z-50 px-6 md:px-12 lg:px-20 pt-12 pb-4 pointer-events-none mix-blend-difference text-white">
+        <h2 className="text-2xl md:text-3xl font-heading font-black tracking-tighter uppercase">
+          Selected <span className="text-gray-400">Works / 2026</span>
+        </h2>
       </div>
 
-      <div ref={scrollWrapperRef} className="h-full w-full flex items-center">
-        <div ref={horizontalPanelRef} className="flex h-full w-[500vw]">
-          {projects.map((project, index) => (
-            <div 
-              key={project.id} 
-              className="project-panel relative w-screen h-full flex flex-col justify-center items-center p-6 md:p-12 lg:p-24"
-            >
-              <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center z-10">
-                
-                {/* Project Info */}
-                <div className="lg:col-span-4 flex flex-col gap-6 lg:gap-10 order-2 lg:order-1">
-                  <div className="space-y-4">
-                    <div className="text-xs font-mono font-bold tracking-[0.3em] uppercase" style={{ color: project.color }}>
-                      0{index + 1} / 0{projects.length}
-                    </div>
-                    <h3 className="text-4xl md:text-5xl lg:text-7xl font-heading font-black tracking-tighter leading-none">
-                      {project.title.split(' ').map((word, i) => (
-                        <div key={i} className="overflow-hidden">
-                          <span className="block">{word}</span>
-                        </div>
-                      ))}
-                    </h3>
-                  </div>
-                  
-                  <p className="font-light text-foreground/70 text-lg leading-relaxed max-w-md">
-                    {project.description}
-                  </p>
-
-                  <div className="flex flex-wrap gap-3">
-                    {project.tech.map((t) => (
-                      <span key={t} className="px-3 py-1.5 border border-foreground/10 rounded-full text-xs font-mono uppercase tracking-widest text-foreground/80 backdrop-blur-md bg-foreground/5">
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="flex items-center gap-6 mt-4">
-                    <Link 
-                      href={project.link} 
-                      target="_blank"
-                      className="group flex items-center gap-3 text-sm font-bold uppercase tracking-widest hover:text-accent-blue transition-colors"
-                    >
-                      <span className="w-10 h-10 rounded-full border border-foreground/20 flex items-center justify-center group-hover:border-accent-blue transition-colors">
-                        <ExternalLink className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                      </span>
-                      Live Site
-                    </Link>
-                    <Link 
-                      href={`/case-study/${project.id}`} 
-                      className="group flex items-center gap-3 text-sm font-bold uppercase tracking-widest text-foreground/50 hover:text-foreground transition-colors"
-                    >
-                      <Code className="w-4 h-4" />
-                      Case Study
-                    </Link>
-                  </div>
-                </div>
-
-                {/* Project Image Showcase */}
-                <div className="lg:col-span-8 w-full h-[40vh] lg:h-[70vh] relative group overflow-hidden rounded-[2rem] border border-foreground/10 bg-background/50 order-1 lg:order-2">
-                  <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500 z-10" />
-                  
-                  <img 
-                    src={project.image} 
-                    alt={project.title}
-                    className="project-image w-full h-full object-cover rounded-[2rem]"
-                  />
-
-                  {/* Interactive floating cursor element that follows mouse - CSS only for simplicity here */}
-                  <div className="opacity-0 group-hover:opacity-100 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-background/80 backdrop-blur-xl rounded-full flex items-center justify-center text-[10px] uppercase font-bold tracking-widest z-20 pointer-events-none transition-all duration-300 scale-50 group-hover:scale-100">
-                    View
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          ))}
-        </div>
+      <div className="flex flex-col w-full relative mt-[-60px]">
+        {projects.map((project, index) => (
+          <ProjectCard 
+            key={project.id} 
+            project={project} 
+            index={index} 
+            total={projects.length} 
+          />
+        ))}
       </div>
     </section>
   );

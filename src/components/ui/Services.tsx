@@ -111,13 +111,13 @@ export function Services() {
   }, []);
 
   return (
-    <section id="services" ref={containerRef} className="py-32 px-6 flex flex-col items-center justify-center min-h-screen relative overflow-hidden bg-background border-t border-foreground/10">
+    <section id="services" ref={containerRef} className="py-32 flex flex-col items-center justify-center min-h-screen relative overflow-hidden bg-background border-t border-foreground/10">
       
       {/* Background Ambience */}
       <div className="absolute inset-0 pointer-events-none mix-blend-screen opacity-50"
            style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(59,130,246,0.1) 0%, transparent 50%)' }} />
 
-      <div className="max-w-7xl mx-auto w-full space-y-24 relative z-10">
+      <div className="max-w-7xl mx-auto w-full px-6 md:px-12 lg:px-20 space-y-24 relative z-10">
         
         <div className="services-header flex flex-col items-center text-center gap-4">
           <div className="flex items-center gap-4">

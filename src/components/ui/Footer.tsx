@@ -44,13 +44,13 @@ export function Footer() {
   };
 
   return (
-    <footer ref={containerRef} className="relative bg-background pt-32 pb-10 px-6 border-t border-foreground/10 overflow-hidden">
+    <footer ref={containerRef} className="relative bg-background pt-32 pb-10 border-t border-foreground/10 overflow-hidden">
       
       {/* Background Effect */}
       <div className="absolute inset-0 pointer-events-none opacity-20 mix-blend-screen"
            style={{ backgroundImage: 'radial-gradient(circle at 50% 100%, rgba(59,130,246,0.15) 0%, transparent 50%)' }} />
 
-      <div className="max-w-7xl mx-auto relative z-10">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-24">
           
           {/* Brand Col */}
@@ -103,7 +103,7 @@ export function Footer() {
           </h2>
           
           <div className="w-full flex flex-col md:flex-row justify-between items-center gap-6 text-foreground/40 font-mono text-xs uppercase tracking-widest pt-8 border-t border-foreground/10">
-            <p>Â© {new Date().getFullYear()} Mahesh. All systems nominal.</p>
+            <p>© {new Date().getFullYear()} Mahesh. All systems nominal.</p>
             
             <button 
               onClick={scrollToTop}

@@ -57,7 +57,7 @@ export function ThreeBackground() {
   return (
     <div className="fixed inset-0 -z-10 bg-background transition-colors duration-500">
       <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/5 via-transparent to-accent-purple/5 pointer-events-none" />
-      <Canvas camera={{ position: [0, 0, 1] }} alpha={true}>
+      <Canvas camera={{ position: [0, 0, 1] }} gl={{ alpha: true }}>
         <ambientLight intensity={theme === "dark" ? 0.5 : 0.8} />
         <pointLight position={[10, 10, 10]} />
         <ParticleField />

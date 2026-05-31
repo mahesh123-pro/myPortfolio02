@@ -75,19 +75,19 @@ export function Contact() {
   }, []);
 
   return (
-    <section id="contact" ref={containerRef} className="py-32 px-6 relative overflow-hidden bg-background min-h-screen flex items-center">
+    <section id="contact" ref={containerRef} className="py-32 relative overflow-hidden bg-background min-h-screen flex items-center">
       
       {/* Cinematic Background Lines */}
       <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '100px 100px' }} />
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 relative z-10 w-full">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 grid grid-cols-1 lg:grid-cols-2 gap-20 relative z-10 w-full">
         
         {/* Left Content */}
         <div className="space-y-16">
           <div className="space-y-4">
              <div className="flex items-center gap-4">
               <div className="w-12 h-px bg-foreground/20"></div>
-              <span className="text-xs font-mono tracking-[0.4em] uppercase text-foreground/50 font-bold">06 — Connection</span>
+              <span className="text-xs font-mono tracking-[0.4em] uppercase text-foreground/50 font-bold">08 — Connection</span>
             </div>
             <h2 ref={titleRef} className="text-5xl md:text-7xl font-black font-heading tracking-tighter uppercase leading-[0.9]">
               Start a <br/>

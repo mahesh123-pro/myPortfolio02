@@ -102,18 +102,18 @@ export function Skills() {
   }, []);
 
   return (
-    <section id="skills" ref={containerRef} className="py-32 px-6 flex flex-col items-center justify-center min-h-screen relative overflow-hidden bg-background">
+    <section id="skills" ref={containerRef} className="py-32 flex flex-col items-center justify-center min-h-screen relative overflow-hidden bg-background">
       
       {/* Background decoration */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-30 mix-blend-screen" 
            style={{ backgroundImage: 'radial-gradient(circle at 10% 90%, rgba(139,92,246,0.15) 0%, transparent 50%)' }} />
 
-      <div className="max-w-7xl mx-auto w-full z-10 text-center space-y-24">
+      <div className="max-w-7xl mx-auto w-full px-6 md:px-12 lg:px-20 z-10 text-center space-y-24">
         
         <div className="skills-header flex flex-col items-center gap-4">
           <div className="flex items-center gap-4">
             <div className="w-12 h-px bg-foreground/20"></div>
-            <span className="text-xs font-mono tracking-[0.4em] uppercase text-foreground/50 font-bold">04 — Core Competencies</span>
+            <span className="text-xs font-mono tracking-[0.4em] uppercase text-foreground/50 font-bold">05 — Core Competencies</span>
             <div className="w-12 h-px bg-foreground/20"></div>
           </div>
           <h2 className="text-4xl md:text-7xl font-heading font-black tracking-tighter uppercase mix-blend-difference leading-[0.9]">

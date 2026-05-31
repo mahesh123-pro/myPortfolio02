@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { ThreeBackground } from "@/components/ui/ThreeBackground";
 import { Preloader } from "@/components/ui/Preloader";
 import { SmoothScroll } from "@/components/ui/SmoothScroll";
+import CustomCursor from "@/components/ui/CustomCursor";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -42,6 +43,7 @@ export default function RootLayout({
           <SmoothScroll>
             <Preloader />
             <ThreeBackground />
+            <CustomCursor />
             {children}
           </SmoothScroll>
         </ThemeProvider>

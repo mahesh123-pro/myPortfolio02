@@ -7,8 +7,10 @@ import { ThemeToggle } from "./ThemeToggle";
 import gsap from "gsap";
 
 const navLinks = [
+  { name: "About", href: "#about" },
   { name: "Services", href: "#services" },
   { name: "Projects", href: "#projects" },
+  { name: "Skills", href: "#skills" },
   { name: "Experience", href: "#experience" }
 ];
 
@@ -25,6 +27,17 @@ export function Header() {
   });
 
   const headerY = useTransform(scrollYProgress, [0, 0.05], [0, 0]); // Can add hide-on-scroll down logic here
+
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
 
   useEffect(() => {
     const handleScroll = () => {

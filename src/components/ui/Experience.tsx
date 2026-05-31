@@ -69,16 +69,16 @@ export function Experience() {
   const experiences = Object.values(journeyData);
 
   return (
-    <section id="experience" ref={containerRef} className="relative w-full py-32 bg-background overflow-hidden relative">
+    <section id="experience" ref={containerRef} className="relative w-full py-32 bg-background overflow-hidden">
       
       {/* Background ambient lighting */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-purple-500/5 rounded-full blur-[200px] pointer-events-none"></div>
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-20 mb-20 relative z-10 text-center lg:text-left">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 mb-20 relative z-10 text-center lg:text-left">
         <div className="flex flex-col items-center lg:items-start gap-4 mb-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-px bg-foreground/20"></div>
-            <span className="text-xs font-mono tracking-[0.4em] uppercase text-foreground/50 font-bold">03 — Career Path</span>
+            <span className="text-xs font-mono tracking-[0.4em] uppercase text-foreground/50 font-bold">06 — Career Path</span>
           </div>
           <h2 className="text-4xl md:text-6xl font-heading font-black tracking-tighter mix-blend-difference">
             THE JOURNEY.
@@ -86,7 +86,7 @@ export function Experience() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 relative z-10">
+      <div className="max-w-6xl mx-auto px-6 md:px-12 lg:px-20 relative z-10">
         <div className="relative wrap flex flex-col items-center">
           
           {/* Static thin line track */}
@@ -106,13 +106,13 @@ export function Experience() {
                 </div>
 
                 {/* Left Card (only visible on large screens) */}
-                <div className={`hidden lg:block w-5/12 ${isLeft ? 'text-right pr-12' : 'invisible'}`}>
+                <div className={`hidden lg:block w-5/12 ${isLeft ? 'text-right pr-12' : 'lg:invisible'}`}>
                   {isLeft && <TimelineCard exp={exp} isRight={false} />}
                 </div>
 
                 {/* Right Card */}
                 <div className={`w-full lg:w-5/12 ${!isLeft ? 'lg:pl-12 text-left' : 'lg:invisible'}`}>
-                  {(!isLeft || window.innerWidth < 1024) && <TimelineCard exp={exp} isRight={true} />}
+                  <TimelineCard exp={exp} isRight={true} />
                 </div>
                 
               </div>

@@ -27,6 +27,7 @@ export const Preloader = () => {
     // Lock scroll
     document.body.style.overflow = "hidden";
     
+    let lastWordIndex = 0;
     // Progress increment
     let currentProgress = 0;
     const interval = setInterval(() => {
@@ -70,7 +71,8 @@ export const Preloader = () => {
         words.length - 1
       );
       
-      if (words[wordIndex] !== currentWord && wordRef.current) {
+      if (wordIndex !== lastWordIndex && wordRef.current) {
+        lastWordIndex = wordIndex;
         gsap.to(wordRef.current, {
           y: -20,
           opacity: 0,

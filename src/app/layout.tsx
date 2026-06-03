@@ -1,24 +1,23 @@
 import type { Metadata } from "next";
-import { Inter, Outfit } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { ThreeBackground } from "@/components/ui/ThreeBackground";
+import { BackgroundSystem } from "@/components/ui/BackgroundSystem";
 import { Preloader } from "@/components/ui/Preloader";
 import { SmoothScroll } from "@/components/ui/SmoothScroll";
-import CustomCursor from "@/components/ui/CustomCursor";
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const outfit = Outfit({
-  variable: "--font-outfit",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Dev Portfolio | Animated Experience",
+  title: "Dev Portfolio | Cloud Engineer & Full-Stack Developer",
   description: "A highly interactive portfolio showcasing modern web development, cloud engineering, and stunning UI/UX design.",
 };
 
@@ -30,7 +29,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${outfit.variable} h-full antialiased`}
+      className={`${inter.variable} ${spaceGrotesk.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
@@ -42,8 +41,7 @@ export default function RootLayout({
         >
           <SmoothScroll>
             <Preloader />
-            <ThreeBackground />
-            <CustomCursor />
+            <BackgroundSystem />
             {children}
           </SmoothScroll>
         </ThemeProvider>

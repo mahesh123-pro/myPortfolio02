@@ -90,7 +90,7 @@ export function SideHustleSkills() {
         
         <div className="hustle-header flex flex-col items-start gap-4">
           <div className="flex items-center gap-4">
-            <span className="text-xs font-mono tracking-[0.4em] uppercase text-foreground/50 font-bold">04 — Creative Outlets</span>
+            <span className="text-xs font-mono tracking-[0.4em] uppercase text-foreground/50 font-bold">04 — Side Hustles</span>
             <div className="w-12 h-px bg-foreground/20"></div>
           </div>
           <h2 className="text-4xl md:text-6xl font-heading font-black tracking-tighter uppercase leading-[0.9]">

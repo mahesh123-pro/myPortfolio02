@@ -122,7 +122,7 @@ export function Services() {
         <div className="services-header flex flex-col items-center text-center gap-4">
           <div className="flex items-center gap-4">
             <div className="w-12 h-px bg-foreground/20"></div>
-            <span className="text-xs font-mono tracking-[0.4em] uppercase text-foreground/50 font-bold">02 — Expertise</span>
+            <span className="text-xs font-mono tracking-[0.4em] uppercase text-foreground/50 font-bold">02 — Services</span>
             <div className="w-12 h-px bg-foreground/20"></div>
           </div>
           <h2 className="text-4xl md:text-7xl font-heading font-black tracking-tighter uppercase mix-blend-difference leading-[0.9]">

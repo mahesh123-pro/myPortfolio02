@@ -1,10 +1,11 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
 import { journeyData } from "@/data/experience";
+import { motion } from "framer-motion";
+import { Calendar, Briefcase } from "lucide-react";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -14,9 +15,12 @@ export function Experience() {
   const containerRef = useRef<HTMLElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(() => {
-    // 1. Animate the central vertical line drawing down depending on scroll progress
-    gsap.fromTo(lineRef.current, 
+  useEffect(() => {
+    // 1. Draw the vertical timeline line dynamically with scroll trigger
+    const line = lineRef.current;
+    if (!line) return;
+
+    gsap.fromTo(line, 
       { scaleY: 0 },
       {
         scaleY: 1,
@@ -25,93 +29,98 @@ export function Experience() {
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top center",
-          end: "bottom bottom",
+          end: "bottom 80%",
           scrub: true,
         }
       }
     );
 
-    // 2. Animate each experience block
+    // 2. Animate timeline blocks
     const items = gsap.utils.toArray(".timeline-item");
     items.forEach((item: any, i) => {
-      // Alternate animation direction for left/right
       const isLeft = i % 2 === 0;
       const content = item.querySelector('.timeline-content');
       const dot = item.querySelector('.timeline-dot');
 
-      // Pop in the dot
+      // Animate dot pop-in
       gsap.from(dot, {
         scale: 0,
         opacity: 0,
-        duration: 0.6,
-        ease: "back.out(1.7)",
+        duration: 0.5,
+        ease: "back.out(2)",
         scrollTrigger: {
           trigger: item,
-          start: "top 70%",
+          start: "top 80%",
         }
       });
 
-      // Slide in the content card
+      // Animate content card slide-in
       gsap.from(content, {
-        x: isLeft ? -100 : 100,
+        x: isLeft ? -60 : 60,
         opacity: 0,
         duration: 0.8,
         ease: "power3.out",
         scrollTrigger: {
           trigger: item,
-          start: "top 75%",
+          start: "top 80%",
         }
       });
     });
 
-  }, { scope: containerRef });
+  }, []);
 
   const experiences = Object.values(journeyData);
 
   return (
-    <section id="experience" ref={containerRef} className="relative w-full py-32 bg-background overflow-hidden">
+    <section id="experience" ref={containerRef} className="relative w-full py-28 bg-[#0A0A0A] overflow-hidden border-t border-white/5">
       
-      {/* Background ambient lighting */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-purple-500/5 rounded-full blur-[200px] pointer-events-none"></div>
+      {/* Background glow node */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[#ff6b00]/1 rounded-full blur-[200px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 mb-20 relative z-10 text-center lg:text-left">
-        <div className="flex flex-col items-center lg:items-start gap-4 mb-6">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-px bg-foreground/20"></div>
-            <span className="text-xs font-mono tracking-[0.4em] uppercase text-foreground/50 font-bold">06 — Career Path</span>
+        <div className="flex flex-col items-center lg:items-start gap-4">
+          <div className="flex items-center gap-3">
+            <span className="w-8 h-px bg-[#ff6b00]" />
+            <span className="text-[10px] font-mono tracking-[0.4em] uppercase text-[#ff6b00] font-bold">05 — History</span>
           </div>
-          <h2 className="text-4xl md:text-6xl font-heading font-black tracking-tighter mix-blend-difference">
-            THE JOURNEY.
+          <h2 className="text-4xl md:text-7xl font-heading font-black tracking-tighter uppercase text-white leading-none">
+            Learning & <span className="text-gradient-orange">Milestones.</span>
           </h2>
+          <p className="text-white/50 text-xs sm:text-sm font-light max-w-xl font-mono mt-2">
+            The chronological progression of my technology stacks: Linux foundations, AWS deployment, Azure architectures, DevOps, and leadership.
+          </p>
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-6 md:px-12 lg:px-20 relative z-10">
         <div className="relative wrap flex flex-col items-center">
           
-          {/* Static thin line track */}
-          <div className="absolute w-[2px] h-full bg-foreground/5 left-[30px] lg:left-1/2 lg:-translate-x-1/2 rounded-full"></div>
+          {/* Static background track */}
+          <div className="absolute w-[2px] h-full bg-white/5 left-[20px] lg:left-1/2 lg:-translate-x-1/2 rounded-full" />
           
-          {/* Active colored line drawn by GSAP */}
-          <div ref={lineRef} className="absolute w-[2px] h-full bg-gradient-to-b from-blue-500 via-purple-500 to-emerald-500 left-[30px] lg:left-1/2 lg:-translate-x-1/2 rounded-full z-10"></div>
+          {/* Active orange glowing line drawn by GSAP */}
+          <div ref={lineRef} className="absolute w-[2px] h-full bg-gradient-to-b from-[#ff6b00] to-[#ffaa00] left-[20px] lg:left-1/2 lg:-translate-x-1/2 rounded-full z-10 shadow-[0_0_12px_#ff6b00]" />
 
           {experiences.map((exp, index) => {
             const isLeft = index % 2 === 0;
             return (
-              <div key={exp.id} className="timeline-item w-full flex justify-[flex-start] lg:justify-between items-center mb-16 relative pl-20 lg:pl-0">
+              <div 
+                key={exp.id} 
+                className="timeline-item w-full flex justify-[flex-start] lg:justify-between items-center mb-16 relative pl-12 lg:pl-0"
+              >
                 
-                {/* Timeline Dot */}
-                <div className={`timeline-dot absolute w-10 h-10 rounded-full border-4 border-background bg-foreground shadow-xl z-20 left-[10px] lg:left-1/2 lg:-translate-x-1/2 flex items-center justify-center`}>
-                  <div className="w-2 h-2 rounded-full bg-background"></div>
+                {/* Timeline Dot with orange glow ring */}
+                <div className="timeline-dot absolute w-8 h-8 rounded-full border-2 border-[#ff6b00] bg-black shadow-[0_0_10px_rgba(255,107,0,0.5)] z-20 left-[6px] lg:left-1/2 lg:-translate-x-1/2 flex items-center justify-center">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#ff6b00]" />
                 </div>
 
-                {/* Left Card (only visible on large screens) */}
-                <div className={`hidden lg:block w-5/12 ${isLeft ? 'text-right pr-12' : 'lg:invisible'}`}>
+                {/* Left Card (Large screens) */}
+                <div className={`hidden lg:block w-5/12 ${isLeft ? 'text-right pr-10' : 'lg:invisible'}`}>
                   {isLeft && <TimelineCard exp={exp} isRight={false} />}
                 </div>
 
                 {/* Right Card */}
-                <div className={`w-full lg:w-5/12 ${!isLeft ? 'lg:pl-12 text-left' : 'lg:invisible'}`}>
+                <div className={`w-full lg:w-5/12 ${!isLeft ? 'lg:pl-10 text-left' : 'lg:invisible'}`}>
                   <TimelineCard exp={exp} isRight={true} />
                 </div>
                 
@@ -128,23 +137,33 @@ export function Experience() {
 
 function TimelineCard({ exp, isRight }: { exp: any, isRight: boolean }) {
   return (
-    <div className={`timeline-content bg-foreground/5 p-8 rounded-3xl border border-foreground/10 hover:bg-foreground/10 transition-colors duration-500 relative group`}>
-      <span className="text-[10px] font-mono tracking-[0.3em] font-bold text-foreground/40 uppercase mb-4 block" style={{ color: exp.color }}>
-        {exp.year}
-      </span>
-      <h3 className="text-2xl lg:text-3xl font-heading font-black mb-2 leading-tight">
-        {exp.role}
-      </h3>
-      <h4 className="text-sm font-bold uppercase tracking-widest text-foreground/60 mb-6">
-        @ {exp.company}
-      </h4>
-      <p className="text-foreground/70 font-light leading-relaxed mb-8">
+    <div className="timeline-content bg-white/3 p-6 sm:p-8 rounded-[2rem] border border-white/5 hover:border-[#ff6b00]/30 hover:bg-white/5 transition-all duration-300 relative group flex flex-col gap-4">
+      {/* Subtle hover backlight glow */}
+      <div className="absolute inset-0 bg-radial-gradient from-[#ff6b00]/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-md pointer-events-none" />
+
+      <div className={`flex flex-col gap-1 relative z-10 ${isRight ? 'text-left' : 'lg:text-right text-left'}`}>
+        <span className="text-[10px] font-mono tracking-[0.2em] font-bold text-[#ff6b00] uppercase flex items-center gap-1.5 justify-start lg:justify-end">
+          <Calendar className="w-3.5 h-3.5" />
+          {exp.year}
+        </span>
+        <h3 className="text-xl sm:text-2xl font-heading font-black text-white leading-tight uppercase group-hover:text-[#ff6b00] transition-colors duration-300">
+          {exp.role}
+        </h3>
+        <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-white/50">
+          @ {exp.company}
+        </h4>
+      </div>
+
+      <p className={`text-white/60 text-xs sm:text-sm font-light leading-relaxed relative z-10 ${isRight ? 'text-left' : 'lg:text-right text-left'}`}>
         {exp.description}
       </p>
 
-      <div className={`flex flex-wrap gap-2 ${isRight ? 'justify-start' : 'lg:justify-end justify-start'}`}>
+      <div className={`flex flex-wrap gap-1.5 relative z-10 ${isRight ? 'justify-start' : 'lg:justify-end justify-start'}`}>
         {exp.skills.map((skill: string) => (
-          <span key={skill} className="px-3 py-1 bg-background/50 border border-foreground/5 rounded-full text-[10px] font-mono uppercase tracking-widest text-foreground/70">
+          <span 
+            key={skill} 
+            className="px-2.5 py-1 bg-black/60 border border-white/5 rounded-lg text-[9px] font-mono uppercase tracking-wide text-white/80"
+          >
             {skill}
           </span>
         ))}

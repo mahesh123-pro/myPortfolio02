@@ -1,11 +1,10 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Cloud, Code, Terminal, BrainCircuit } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
-import SplitType from "split-type";
-import { motion } from "framer-motion";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -13,116 +12,153 @@ if (typeof window !== "undefined") {
 
 export function About() {
   const containerRef = useRef<HTMLElement>(null);
-  const textRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
-  const statsRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(() => {
-    // 1. Text reveal parsing
-    const paragraphs = textRef.current?.querySelectorAll("p");
-    
-    if (paragraphs) {
-      paragraphs.forEach((p) => {
-        const split = new SplitType(p, { types: 'lines,words' });
-        
-        gsap.from(split.words, {
-          scrollTrigger: {
-            trigger: p,
-            start: "top 80%",
-            end: "bottom 50%",
-            scrub: 1,
-          },
-          opacity: 0.1,
-          duration: 1,
-          stagger: 0.05,
-          ease: "power2.out",
-        });
-      });
-    }
+  // Parallax scroll effect on the image container
+  useEffect(() => {
+    const img = imageRef.current;
+    if (!img) return;
 
-    // 2. Parallax Image
-    gsap.fromTo(imageRef.current,
-      { y: 100, scale: 1.1 },
+    gsap.fromTo(img,
+      { yPercent: 12 },
       {
-        y: -100,
-        scale: 1,
+        yPercent: -12,
         ease: "none",
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top bottom",
           end: "bottom top",
-          scrub: true
+          scrub: true,
         }
       }
     );
+  }, []);
 
-    // 3. Stats Fade in
-    gsap.fromTo(".stat-card",
-      { opacity: 0, y: 50 },
-      {
-        opacity: 1,
-        y: 0,
-        stagger: 0.2,
-        duration: 1,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: statsRef.current,
-          start: "top 85%",
-        }
-      }
-    );
-
-  }, { scope: containerRef });
+  const cards = [
+    {
+      icon: <Cloud className="w-6 h-6 text-[#ff6b00]" />,
+      title: "Cloud Architecting",
+      description: "Designing high-availability multi-region setups across AWS and Azure. Specializing in serverless microservices."
+    },
+    {
+      icon: <Code className="w-6 h-6 text-[#ff6b00]" />,
+      title: "Full-Stack Mastery",
+      description: "Constructing pixel-perfect React and Next.js interfaces powered by Node.js backends and Redis data layers."
+    },
+    {
+      icon: <Terminal className="w-6 h-6 text-[#ff6b00]" />,
+      title: "Linux & DevOps",
+      description: "Automating server deployments, scripting in Bash, containerizing with Docker, and building CI/CD pipelines."
+    },
+    {
+      icon: <BrainCircuit className="w-6 h-6 text-[#ff6b00]" />,
+      title: "Problem Solving",
+      description: "Resolving performance bottlenecks, optimizing query structures, and ensuring 99.9% uptime for core workloads."
+    }
+  ];
 
   return (
-    <section id="about" ref={containerRef} className="relative w-full min-h-screen pt-32 pb-24 overflow-hidden bg-background text-foreground flex flex-col justify-center">
-      
-      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-accent-blue/10 rounded-full blur-[150px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
+    <section 
+      id="about" 
+      ref={containerRef} 
+      className="relative w-full py-28 bg-[#0A0A0A] overflow-hidden"
+    >
+      {/* Background Glow */}
+      <div className="absolute top-1/2 left-0 w-80 h-80 bg-[#ff6b00]/3 rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 w-full grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 relative z-10">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 relative z-10">
         
-        <div className="lg:col-span-7 flex flex-col justify-center">
-          
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
+        {/* Left Side: Professional image placeholder with parallax */}
+        <div className="lg:col-span-5 flex items-center justify-center">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="flex items-center gap-4 mb-12"
+            transition={{ duration: 0.8 }}
+            className="relative w-full max-w-[420px] aspect-[4/5] rounded-[2rem] overflow-hidden border border-white/10 bg-white/3 shadow-[0_20px_50px_rgba(0,0,0,0.6)] group"
           >
-            <div className="w-12 h-px bg-foreground/20"></div>
-            <span className="text-xs font-mono tracking-[0.4em] uppercase text-foreground/50 font-bold">01 — The Architect</span>
-          </motion.div>
-
-          <div ref={textRef} className="space-y-12">
-            <p className="text-3xl sm:text-4xl md:text-5xl font-heading font-black tracking-tight leading-[1.1]">
-              Currently spearheading technical initiatives as <span className="text-accent-blue">Tech Lead @ GKLT (Manakrishi)</span>, specializing in building cloud-native applications that balance high performance with sophisticated design.
-            </p>
+            {/* Grayscale overlay with hover color reveal */}
+            <div className="absolute inset-0 bg-[#ff6b00]/10 mix-blend-color z-10 pointer-events-none transition-opacity duration-700 group-hover:opacity-0" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10 pointer-events-none opacity-80" />
             
-            <p className="text-xl md:text-2xl text-foreground/60 font-light leading-relaxed max-w-2xl">
-              As a B-Tech student at MLRITM, my focus lies at the intersection of Cloud Engineering and Full-Stack development. I don't just write code; I engineer systems that scale, secure, and solve real-world problems seamlessly.
-            </p>
-          </div>
-
-          <div ref={statsRef} className="grid grid-cols-2 gap-6 mt-16 lg:mt-24">
-            <div className="stat-card p-8 rounded-3xl bg-foreground/5 border border-foreground/10 hover:bg-foreground/10 transition-colors group">
-              <div className="text-5xl md:text-6xl font-black text-foreground mb-4 group-hover:text-accent-blue transition-colors">04+</div>
-              <div className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-foreground/40 leading-relaxed">Years Deep<br />in Tech</div>
-            </div>
-            <div className="stat-card p-8 rounded-3xl bg-foreground/5 border border-foreground/10 hover:bg-foreground/10 transition-colors group">
-              <div className="text-5xl md:text-6xl font-black text-foreground mb-4 group-hover:text-accent-purple transition-colors">07+</div>
-              <div className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-foreground/40 leading-relaxed">Flagship<br />Deploys</div>
-            </div>
-          </div>
+            {/* The actual photo */}
+            <div 
+              ref={imageRef}
+              className="absolute inset-[-15%] w-[130%] h-[130%] bg-[url('/portfolio1assests/mahesh-about.png')] bg-cover bg-center filter grayscale contrast-[1.15] opacity-80 group-hover:grayscale-0 group-hover:opacity-95 transition-all duration-700 ease-out"
+            />
+            
+            {/* Border frame glow */}
+            <div className="absolute inset-4 rounded-[1.5rem] border border-white/5 group-hover:border-[#ff6b00]/40 transition-colors duration-500 z-20 pointer-events-none" />
+          </motion.div>
         </div>
 
-        <div className="lg:col-span-5 relative flex items-center justify-center lg:justify-end h-[60vh] lg:h-auto">
-          <div className="relative w-full max-w-[450px] aspect-[3/4] rounded-[2rem] overflow-hidden bg-background/5 border border-foreground/10">
-            <div className="absolute inset-0 bg-black/20 z-10 mix-blend-multiply"></div>
-            <div 
-              ref={imageRef} 
-              className="absolute inset-[-10%] w-[120%] h-[120%] bg-[url('/portfolio1assests/maheshmain.png')] bg-cover bg-center filter grayscale opacity-80"
-            />
+        {/* Right Side: Narrative and Interactive Cards */}
+        <div className="lg:col-span-7 flex flex-col justify-center space-y-12">
+          
+          <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="flex items-center gap-3"
+            >
+              <span className="w-8 h-px bg-[#ff6b00]" />
+              <span className="text-[10px] font-mono font-bold text-[#ff6b00] uppercase tracking-[0.4em]">01 — Biography</span>
+            </motion.div>
+
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-3xl sm:text-4xl md:text-5xl font-heading font-black tracking-tight leading-none text-white uppercase"
+            >
+              Engineering Scalable <br />
+              <span className="text-gradient-orange">Cloud Systems.</span>
+            </motion.h2>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-white/60 text-base sm:text-lg leading-relaxed max-w-2xl font-light"
+            >
+              I am a Cloud Engineer and Full-Stack Developer specializing in building scalable web applications and high-availability serverless systems. With a strong background in AWS, Azure, Linux administration, and modern JavaScript ecosystems, I focus on constructing secure, performant environments that tackle real-world architectural issues.
+            </motion.p>
           </div>
+
+          {/* Animated Experience Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+            {cards.map((card, idx) => (
+              <motion.div
+                key={card.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.1 * idx }}
+                whileHover={{ y: -6 }}
+                className="p-6 rounded-[1.8rem] bg-white/3 border border-white/5 hover:border-[#ff6b00]/30 hover:bg-white/5 transition-all duration-300 relative group overflow-hidden"
+              >
+                {/* Spotlight background hover glow */}
+                <div className="absolute -inset-2 bg-radial-gradient from-[#ff6b00]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-md pointer-events-none" />
+                
+                <div className="w-12 h-12 rounded-2xl bg-white/3 border border-white/10 flex items-center justify-center mb-5 relative z-10 group-hover:border-[#ff6b00]/30 group-hover:scale-105 transition-all duration-300">
+                  {card.icon}
+                </div>
+                
+                <h3 className="text-base font-heading font-bold text-white mb-2 relative z-10 group-hover:text-[#ff6b00] transition-colors duration-300">
+                  {card.title}
+                </h3>
+                
+                <p className="text-xs text-white/50 leading-relaxed font-mono relative z-10">
+                  {card.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+
         </div>
 
       </div>

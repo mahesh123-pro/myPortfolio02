@@ -11,7 +11,7 @@ function ParticleField() {
   const ref = useRef<THREE.Points>(null);
   
   // Generate particles
-  const positions = useMemo(() => {
+  const [positions] = useState(() => {
     const pos = new Float32Array(2000 * 3);
     for (let i = 0; i < 2000; i++) {
       pos[i * 3] = (Math.random() - 0.5) * 10;
@@ -19,7 +19,7 @@ function ParticleField() {
       pos[i * 3 + 2] = (Math.random() - 0.5) * 10;
     }
     return pos;
-  }, []);
+  });
 
   useFrame((state, delta) => {
     if (ref.current) {

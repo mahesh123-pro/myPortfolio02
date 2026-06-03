@@ -81,7 +81,7 @@ export function Testimonials() {
         <div className="test-header flex flex-col items-center text-center gap-4">
           <div className="flex items-center gap-4">
             <div className="w-12 h-px bg-foreground/20"></div>
-            <span className="text-xs font-mono tracking-[0.4em] uppercase text-foreground/50 font-bold">07 — Endorsements</span>
+            <span className="text-xs font-mono tracking-[0.4em] uppercase text-foreground/50 font-bold">07 — Testimonials</span>
             <div className="w-12 h-px bg-foreground/20"></div>
           </div>
           <h2 className="text-4xl md:text-6xl font-heading font-black tracking-tighter uppercase leading-[0.9]">
@@ -99,7 +99,7 @@ export function Testimonials() {
               <Quote className="text-foreground/10 w-16 h-16 absolute -top-4 -left-4 -rotate-12 group-hover:scale-110 group-hover:-rotate-0 group-hover:text-accent-blue/10 transition-all duration-500" />
               
               <p className="text-foreground/80 font-light text-sm md:text-base leading-relaxed relative z-10 font-mono italic">
-                "{test.quote}"
+                &quot;{test.quote}&quot;
               </p>
               
               <div className="mt-auto pt-8 border-t border-foreground/10 relative z-10">

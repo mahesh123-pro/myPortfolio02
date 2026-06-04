@@ -4,7 +4,18 @@ import React, { useRef } from "react";
 import { ExternalLink, ArrowUpRight } from "lucide-react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 
-const projects = [
+interface Project {
+  id: string;
+  title: string;
+  description: string;
+  tech: string[];
+  color: string;
+  image: string;
+  link: string;
+  github: string;
+}
+
+const projects: Project[] = [
   {
     id: "manakrishi",
     title: "Manakrishi Platform",
@@ -57,7 +68,7 @@ const projects = [
   }
 ];
 
-function ProjectCard({ project, index }: { project: any; index: number }) {
+function ProjectCard({ project, index }: { project: Project; index: number }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const isEven = index % 2 === 0;
 

@@ -49,7 +49,10 @@ export function ThreeBackground() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    const frameId = requestAnimationFrame(() => {
+      setMounted(true);
+    });
+    return () => cancelAnimationFrame(frameId);
   }, []);
 
   if (!mounted) return <div className="fixed inset-0 -z-10 bg-background" />;

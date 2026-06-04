@@ -154,7 +154,7 @@ export function Services() {
 
               {/* Decorative Accent Background */}
               <div className="absolute -bottom-10 -right-10 p-8 opacity-0 group-hover:opacity-[0.03] scale-50 group-hover:scale-150 transition-all duration-700 pointer-events-none mix-blend-difference z-0">
-                {React.cloneElement(service.icon as React.ReactElement, { size: 200 } as any)}
+                {React.cloneElement(service.icon as React.ReactElement<React.ComponentProps<"svg">>, { size: 200 })}
               </div>
             </div>
           ))}

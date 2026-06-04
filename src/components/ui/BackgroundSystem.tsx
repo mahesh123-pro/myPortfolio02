@@ -67,7 +67,10 @@ export function BackgroundSystem() {
   const layerGridY = useTransform(springY, [-800, 800], [-8, 8]);
 
   useEffect(() => {
-    setMounted(true);
+    // Avoid synchronous state update in effect to satisfy strict linting
+    const frameId = requestAnimationFrame(() => {
+      setMounted(true);
+    });
 
     const handleMouseMove = (event: MouseEvent) => {
       // Get offset from center of window
@@ -78,7 +81,10 @@ export function BackgroundSystem() {
     };
 
     window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
+    return () => {
+      cancelAnimationFrame(frameId);
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
   }, [mouseX, mouseY]);
 
   if (!mounted) {

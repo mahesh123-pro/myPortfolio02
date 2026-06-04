@@ -233,7 +233,7 @@ export default function CaseStudyPage() {
         >
           <div className="absolute top-0 left-0 w-full h-full bg-grid-white/[0.02] pointer-events-none"></div>
           <h2 className="text-4xl md:text-5xl font-heading font-bold">Ready to scale your mission?</h2>
-          <p className="text-xl text-foreground/60 max-w-2xl">Let's connect to build something equally impactful. My inbox is always open for new challenges.</p>
+          <p className="text-xl text-foreground/60 max-w-2xl">Let&apos;s connect to build something equally impactful. My inbox is always open for new challenges.</p>
           <div className="flex flex-wrap gap-4 mt-4">
             <a href="mailto:bakki.mahesh5263@gmail.com" className="px-10 py-5 bg-foreground text-background font-bold rounded-full shadow-2xl transition-all">Start a Conversation</a>
           </div>

@@ -1,197 +1,186 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useRef, useState, useMemo } from "react";
+import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Points, PointMaterial, OrbitControls } from "@react-three/drei";
+import { Points, PointMaterial } from "@react-three/drei";
 import * as THREE from "three";
-import { ArrowDown, Code, ArrowUpRight } from "lucide-react";
+import { ArrowDown, ArrowUpRight } from "lucide-react";
 import gsap from "gsap";
 
-// 1. Procedural texture generation for Earth
-function createEarthTexture() {
-  if (typeof window === "undefined") return null;
-
-  const canvas = document.createElement("canvas");
-  canvas.width = 1024;
-  canvas.height = 512;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return null;
-
-  // Ocean background
-  ctx.fillStyle = "#0A0A0A";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Dotted ocean grid
-  ctx.fillStyle = "rgba(255, 255, 255, 0.015)";
-  const oceanGrid = 16;
-  for (let x = 0; x < canvas.width; x += oceanGrid) {
-    for (let y = 0; y < canvas.height; y += oceanGrid) {
-      ctx.fillRect(x, y, 1.5, 1.5);
-    }
+// Helper to generate stable random data for the vortex
+const genVortexData = (count: number) => {
+  const pos = new Float32Array(count * 3);
+  for (let i = 0; i < count; i++) {
+    const radius = 2 + Math.random() * 1.5;
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    
+    pos[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+    pos[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+    pos[i * 3 + 2] = radius * Math.cos(phi);
   }
 
-  // Draw simplified high-tech continents
-  ctx.fillStyle = "#161616";
-  ctx.strokeStyle = "rgba(255, 107, 0, 0.15)";
-  ctx.lineWidth = 1;
+  const rotations = [...Array(3)].map(() => [
+    Math.random() * Math.PI,
+    Math.random() * Math.PI,
+    0
+  ] as [number, number, number]);
 
-  // Simplified continent polygons (normalized 0 to 1)
-  const landmasses = [
-    // North America
-    [[0.08, 0.15], [0.34, 0.15], [0.38, 0.32], [0.34, 0.42], [0.26, 0.52], [0.22, 0.52], [0.18, 0.45], [0.12, 0.38]],
-    // South America
-    [[0.24, 0.54], [0.31, 0.56], [0.34, 0.65], [0.30, 0.85], [0.26, 0.88], [0.22, 0.68]],
-    // Eurasia / Europe / Asia
-    [[0.42, 0.15], [0.86, 0.15], [0.88, 0.48], [0.72, 0.52], [0.65, 0.48], [0.54, 0.46], [0.46, 0.28]],
-    // Africa
-    [[0.46, 0.48], [0.58, 0.48], [0.62, 0.62], [0.56, 0.78], [0.51, 0.84], [0.47, 0.74], [0.44, 0.56]],
-    // Australia
-    [[0.76, 0.68], [0.85, 0.68], [0.87, 0.78], [0.81, 0.82], [0.77, 0.74]],
-    // Greenland
-    [[0.36, 0.08], [0.44, 0.08], [0.42, 0.18], [0.37, 0.18]],
-    // United Kingdom / Iceland / Japan / Madagascar (small indicators)
-    [[0.41, 0.24], [0.43, 0.25], [0.42, 0.27]],
-    [[0.82, 0.26], [0.84, 0.28], [0.83, 0.30]],
-    [[0.60, 0.72], [0.62, 0.75], [0.61, 0.77]]
-  ];
+  return { positions: pos, ringRotations: rotations };
+};
 
-  landmasses.forEach((poly) => {
-    ctx.beginPath();
-    poly.forEach((pt, idx) => {
-      const px = pt[0] * canvas.width;
-      const py = pt[1] * canvas.height;
-      if (idx === 0) ctx.moveTo(px, py);
-      else ctx.lineTo(px, py);
-    });
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
+// 1. Futuristic Neural Vortex Animation
+function NeuralVortex({ scrollYProgress }: { scrollYProgress: MotionValue<number> }) {
+  const pointsRef = useRef<THREE.Points>(null);
+  const groupRef = useRef<THREE.Group>(null);
 
-    // Fill with tech orange dots inside the continent bounds
-    ctx.save();
-    ctx.clip();
-    ctx.fillStyle = "#ff6b00";
-    const dotSpacing = 5;
-    for (let dx = 0; dx < canvas.width; dx += dotSpacing) {
-      for (let dy = 0; dy < canvas.height; dy += dotSpacing) {
-        ctx.beginPath();
-        ctx.arc(dx, dy, 1.2, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-    ctx.restore();
-  });
+  // Particle configuration - generated once
+  const count = 400;
+  const { positions, ringRotations } = useMemo(() => genVortexData(count), [count]);
 
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.wrapT = THREE.ClampToEdgeWrapping;
-  return texture;
-}
-
-// 2. Interactive Globe component
-function Globe() {
-  const globeRef = useRef<THREE.Mesh>(null);
-  const [earthTexture, setEarthTexture] = useState<THREE.CanvasTexture | null>(null);
-
-  useEffect(() => {
-    const tex = createEarthTexture();
-    if (tex) setEarthTexture(tex);
-  }, []);
-
+  // Update positions for organic pulsing effect
   useFrame((state, delta) => {
-    if (globeRef.current) {
-      // Slow rotation on y axis
-      globeRef.current.rotation.y += delta * 0.15;
+    if (!groupRef.current || !pointsRef.current) return;
+
+    const time = state.clock.getElapsedTime();
+    const scrollVal = scrollYProgress.get();
+    
+    // Smooth group rotation - speeds up on scroll
+    groupRef.current.rotation.y += delta * (0.1 + scrollVal * 0.5);
+    groupRef.current.rotation.x += delta * (0.05 + scrollVal * 0.2);
+
+    // React to mouse movement
+    const targetX = (state.mouse.x * Math.PI) / 6;
+    const targetY = (state.mouse.y * Math.PI) / 6;
+    groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, targetY, 0.05);
+    groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetX, 0.05);
+
+    // Expand the whole group on scroll
+    const scaleValue = 1 + scrollVal * 1.5;
+    groupRef.current.scale.set(scaleValue, scaleValue, scaleValue);
+
+    // Pulse the particles with scroll intensity
+    const posAttr = pointsRef.current.geometry.attributes.position.array as Float32Array;
+    for (let i = 0; i < count; i++) {
+        const i3 = i * 3;
+        const px = posAttr[i3];
+        const py = posAttr[i3 + 1];
+        const pz = posAttr[i3 + 2];
+        
+        // Intensity of chaos increases with scroll
+        const intensity = 0.002 + scrollVal * 0.01;
+        const wave = Math.sin(time + px + py + pz) * intensity;
+        posAttr[i3] += wave;
+        posAttr[i3 + 1] += wave;
+        posAttr[i3 + 2] += wave;
     }
+    pointsRef.current.geometry.attributes.position.needsUpdate = true;
   });
 
   return (
-    <group>
-      {/* Glow Backing Shadow / Aura */}
-      <mesh scale={[1.02, 1.02, 1.02]}>
-        <sphereGeometry args={[1.8, 32, 32]} />
-        <meshBasicMaterial
+    <group ref={groupRef}>
+      {/* Central Energy Core - pulses opacity on pulse */}
+      <mesh>
+        <sphereGeometry args={[1.5, 32, 32]} />
+        <meshBasicMaterial 
+          color="#ff6b00" 
+          transparent 
+          opacity={0.03} 
+          wireframe 
+        />
+      </mesh>
+      
+      {/* Glowing Inner Core */}
+      <mesh scale={[0.8, 0.8, 0.8]}>
+        <sphereGeometry args={[1.5, 16, 16]} />
+        <meshBasicMaterial 
+          color="#ff6b00" 
+          transparent 
+          opacity={0.05} 
+          wireframe 
+        />
+      </mesh>
+
+      {/* Floating Particles */}
+      <Points ref={pointsRef} positions={positions} stride={3}>
+        <PointMaterial
+          transparent
           color="#ff6b00"
-          transparent
-          opacity={0.08}
+          size={0.06}
+          sizeAttenuation={true}
+          depthWrite={false}
+          opacity={0.6}
           blending={THREE.AdditiveBlending}
-          side={THREE.BackSide}
         />
-      </mesh>
+      </Points>
 
-      {/* Atmospheric glow ring */}
-      <mesh scale={[1.05, 1.05, 1.05]}>
-        <sphereGeometry args={[1.8, 32, 32]} />
-        <meshBasicMaterial
-          color="#ffffff"
-          transparent
-          opacity={0.03}
-          blending={THREE.AdditiveBlending}
-          side={THREE.BackSide}
-        />
-      </mesh>
+      {/* Orbiting Tech Rings */}
+      {ringRotations.map((rotation, i) => (
+        <mesh key={i} rotation={rotation}>
+          <torusGeometry args={[2.2 + i * 0.4, 0.005, 16, 100]} />
+          <meshBasicMaterial color="#ff6b00" transparent opacity={0.15 - i * 0.03} />
+        </mesh>
+      ))}
 
-      {/* Earth Sphere */}
-      <mesh ref={globeRef}>
-        <sphereGeometry args={[1.8, 64, 64]} />
-        {earthTexture ? (
-          <meshStandardMaterial
-            map={earthTexture}
-            roughness={0.7}
-            metalness={0.15}
-            emissive="#ff6b00"
-            emissiveIntensity={0.08}
-          />
-        ) : (
-          <meshStandardMaterial color="#0A0A0A" wireframe />
-        )}
+      {/* Additional Glow */}
+      <mesh scale={[2.5, 2.5, 2.5]}>
+        <sphereGeometry args={[1, 32, 32]} />
+        <meshBasicMaterial color="#ff6b00" transparent opacity={0.01} side={THREE.BackSide} />
       </mesh>
     </group>
   );
 }
 
-// 3. Orbiting Satellite Particles
-function SatelliteParticles({ count = 60 }) {
-  const pointsRef = useRef<THREE.Points>(null);
-  const [positions] = useState(() => {
-    const pos = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      const radius = 2.2 + Math.random() * 0.5;
-      const u = Math.random();
-      const v = Math.random();
-      const theta = u * 2.0 * Math.PI;
-      const phi = Math.acos(2.0 * v - 1.0);
+// 2. Character Reveal Animation
+const CharReveal = ({ text, className = "" }: { text: string; className?: string }) => {
+  const chars = text.split("");
+  const containerVariants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.03,
+      },
+    },
+  };
 
-      pos[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
-      pos[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-      pos[i * 3 + 2] = radius * Math.cos(phi);
-    }
-    return pos;
-  });
-
-  useFrame((state, delta) => {
-    if (pointsRef.current) {
-      pointsRef.current.rotation.y += delta * 0.08;
-      pointsRef.current.rotation.x += delta * 0.03;
-    }
-  });
+  const charVariants = {
+    hidden: { y: "150%", opacity: 0, rotateX: -90 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      rotateX: 0,
+      transition: {
+        duration: 0.8,
+        ease: [0.215, 0.61, 0.355, 1] as const,
+      },
+    },
+  };
 
   return (
-    <Points ref={pointsRef} positions={positions} stride={3}>
-      <PointMaterial
-        transparent
-        color="#ff6b00"
-        size={0.035}
-        sizeAttenuation={true}
-        depthWrite={false}
-        opacity={0.5}
-      />
-    </Points>
+    <motion.h1
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      style={{ perspective: "1000px" }}
+      className={className}
+    >
+      {chars.map((char, index) => (
+        <span key={index} className="inline-block overflow-hidden py-1">
+          <motion.span 
+            variants={charVariants} 
+            className="inline-block origin-bottom"
+            style={{ whiteSpace: char === " " ? "pre" : "normal" }}
+          >
+            {char}
+          </motion.span>
+        </span>
+      ))}
+    </motion.h1>
   );
-}
+};
 
-// 4. Character Reveal Animation
+// Subheading Word Reveal
 const WordReveal = ({ text, className = "" }: { text: string; className?: string }) => {
   const words = text.split(" ");
   const containerVariants = {
@@ -240,7 +229,10 @@ export function Hero() {
   const resumeBtnRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
-    setMounted(true);
+    const frameId = requestAnimationFrame(() => {
+      setMounted(true);
+    });
+    return () => cancelAnimationFrame(frameId);
   }, []);
 
   // Magnetic button effects using GSAP
@@ -287,12 +279,23 @@ export function Hero() {
 
   const techStack = ["AWS", "Azure", "Linux", "DevOps", "React", "Next.js"];
 
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"]
+  });
+
+  const bgScale = useTransform(scrollYProgress, [0, 1], [1, 1.2]);
+  const bgOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+
   return (
     <section 
       ref={containerRef} 
-      className="relative min-h-screen w-full flex items-center justify-center bg-[#0A0A0A] overflow-hidden pt-28 lg:pt-0"
+      className="relative min-h-[120vh] w-full flex items-center justify-center bg-[#0A0A0A] overflow-hidden pt-28 lg:pt-0"
     >
-      <div className="absolute inset-0 z-0 bg-radial-at-c from-[#ff6b00]/3 to-transparent pointer-events-none" />
+      <motion.div 
+        style={{ scale: bgScale, opacity: bgOpacity }}
+        className="absolute inset-0 z-0 bg-radial-at-c from-[#ff6b00]/3 to-transparent pointer-events-none" 
+      />
 
       <div className="max-w-7xl mx-auto w-full px-6 md:px-12 lg:px-20 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
         
@@ -309,34 +312,36 @@ export function Hero() {
             <span className="text-[10px] font-mono font-bold text-[#ff6b00] uppercase tracking-[0.4em]">Available for projects</span>
           </motion.div>
 
-          <WordReveal
+          <CharReveal
             text="Cloud Engineer & Full-Stack Developer"
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading font-black tracking-tight leading-[1.05] text-white"
           />
 
-          <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
+          <WordReveal
+            text="Building scalable cloud solutions, modern web applications, and automation systems with production-grade resiliency."
             className="text-white/60 text-base sm:text-lg max-w-xl font-sans leading-relaxed"
-          >
-            Building scalable cloud solutions, modern web applications, and automation systems with production-grade resiliency.
-          </motion.p>
+          />
 
           {/* Tech Stack Pills */}
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.7, duration: 0.8 }}
+            initial="hidden"
+            animate="visible"
+            variants={{
+              visible: { transition: { staggerChildren: 0.1, delayChildren: 0.8 } }
+            }}
             className="flex flex-wrap gap-2.5 pt-2"
           >
             {techStack.map((tech) => (
-              <span 
+              <motion.span 
                 key={tech}
+                variants={{
+                  hidden: { opacity: 0, scale: 0.8, y: 10 },
+                  visible: { opacity: 1, scale: 1, y: 0 }
+                }}
                 className="px-4 py-2 rounded-full border border-white/5 bg-white/3 text-[10px] font-mono text-white/80 uppercase tracking-widest hover:border-[#ff6b00] hover:text-[#ff6b00] transition-colors duration-300 shadow-sm"
               >
                 {tech}
-              </span>
+              </motion.span>
             ))}
           </motion.div>
 
@@ -367,33 +372,31 @@ export function Hero() {
           </motion.div>
         </div>
 
-        {/* Right Column: WebGL Rotating Globe */}
+        {/* Right Column: High-Tech Neural Vortex */}
         <div className="lg:col-span-5 w-full aspect-square relative flex items-center justify-center">
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3, duration: 1.2, ease: "easeOut" }}
-            className="w-full h-full relative cursor-grab active:cursor-grabbing max-w-[450px]"
+            initial={{ opacity: 0, scale: 0.8, rotate: -15 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            transition={{ delay: 0.3, duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full h-full relative max-w-[500px]"
           >
             {mounted && (
-              <Canvas camera={{ position: [0, 0, 4] }} gl={{ alpha: true }}>
-                <ambientLight intensity={0.15} />
-                <directionalLight position={[-4, 2, 4]} intensity={2.2} color="#ffffff" />
-                <directionalLight position={[4, -2, -4]} intensity={0.4} color="#ff6b00" />
-                <Globe />
-                <SatelliteParticles count={70} />
-                <OrbitControls 
-                  enableZoom={false} 
-                  enablePan={false} 
-                  autoRotate 
-                  autoRotateSpeed={0.8}
-                  rotateSpeed={0.6}
-                />
+              <Canvas camera={{ position: [0, 0, 5], fov: 45 }} gl={{ alpha: true }}>
+                <ambientLight intensity={0.5} />
+                <pointLight position={[10, 10, 10]} intensity={1} color="#ff6b00" />
+                <NeuralVortex scrollYProgress={scrollYProgress} />
               </Canvas>
             )}
             
-            {/* Ambient Background Radial Glow behind Globe */}
-            <div className="absolute inset-0 -z-10 rounded-full bg-radial-gradient from-[#ff6b00]/8 to-transparent blur-[60px] pointer-events-none" />
+            {/* Ambient Pulse Glow */}
+            <motion.div 
+              animate={{ 
+                opacity: [0.1, 0.2, 0.1],
+                scale: [1, 1.1, 1]
+              }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute inset-0 -z-10 rounded-full bg-radial-gradient from-[#ff6b00]/15 to-transparent blur-[80px] pointer-events-none" 
+            />
           </motion.div>
         </div>
 

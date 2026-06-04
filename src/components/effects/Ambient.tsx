@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Points, PointMaterial } from "@react-three/drei";
-// @ts-ignore
+import * as THREE from "three";
+// @ts-expect-error maath types missing
 import * as random from "maath/random/dist/maath-random.esm";
 
 // 22. Floating Particles
@@ -11,8 +12,8 @@ import * as random from "maath/random/dist/maath-random.esm";
 // Or we can provide a simple Canvas wrapper here
 import { Canvas } from "@react-three/fiber";
 
-const ParticlesCore = ({ count = 500, color = "#8b5cf6" }) => {
-  const ref = useRef<any>(null);
+const ParticlesCore = ({ count = 500, color = "#ff6b00" }) => {
+  const ref = useRef<THREE.Points>(null);
   
   // Create sphere positions
   const sphere = random.inSphere(new Float32Array(count * 3), { radius: 1.5 });

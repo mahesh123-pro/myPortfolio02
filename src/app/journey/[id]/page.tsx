@@ -103,7 +103,7 @@ export default function JourneyPage() {
             className="max-w-3xl"
           >
             <p className="text-2xl md:text-3xl text-foreground/60 leading-relaxed font-light italic">
-              "{journey.description}"
+              &quot;{journey.description}&quot;
             </p>
           </motion.div>
         </motion.div>

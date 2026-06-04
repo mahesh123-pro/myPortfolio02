@@ -36,11 +36,14 @@ export const Preloader = () => {
         currentProgress = 100;
         clearInterval(interval);
         
-        // Final exit sequence
+        // Final exit sequence matches the prompt:
+        // "Tiny orange light appears in center. Light expands horizontally."
         const tl = gsap.timeline({
           onComplete: () => {
             setIsLoading(false);
             document.body.style.overflow = "";
+            // Dispatch event for Header to reveal
+            window.dispatchEvent(new Event("preloaderFinished"));
           }
         });
         
@@ -51,15 +54,29 @@ export const Preloader = () => {
           ease: "power3.in"
         })
         .to(progressBarRef.current, {
-          scaleX: 0,
-          opacity: 0,
-          duration: 0.4,
+          height: 1, // Collapse to tiny line
+          duration: 0.3,
           ease: "power2.in"
         }, "-=0.3")
-        .to(containerRef.current, {
-          yPercent: -100,
-          duration: 1,
+        .to(progressBarRef.current, {
+          scaleX: 0.01, // shrink to center spot
+          duration: 0.5,
+          ease: "expo.out"
+        })
+        .to(progressBarRef.current, {
+          backgroundColor: "#ff6b00", // tiny orange light
+          boxShadow: "0 0 20px 5px rgba(255, 107, 0, 0.8)",
+          duration: 0.2
+        })
+        .to(progressBarRef.current, {
+          scaleX: 1, // expands horizontally
+          duration: 1.2,
           ease: "expo.inOut"
+        })
+        .to(containerRef.current, {
+          opacity: 0, // Fade out to reveal app
+          duration: 0.8,
+          ease: "power2.inOut"
         }, "-=0.2");
       }
       

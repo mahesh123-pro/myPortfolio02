@@ -71,11 +71,11 @@ export function About() {
         {/* Left Side: Professional image placeholder with parallax */}
         <div className="lg:col-span-5 flex items-center justify-center">
           <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="relative w-full max-w-[420px] aspect-[4/5] rounded-[2rem] overflow-hidden border border-white/10 bg-white/3 shadow-[0_20px_50px_rgba(0,0,0,0.6)] group"
+            initial={{ clipPath: "inset(100% 0 0 0)", filter: "grayscale(100%)", scale: 0.9 }}
+            whileInView={{ clipPath: "inset(0 0 0 0)", filter: "grayscale(0%)", scale: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            className="relative w-full max-w-[420px] aspect-[4/5] rounded-[2rem] overflow-hidden border border-white/10 bg-white/3 shadow-[0_20px_50px_rgba(255,107,0,0.1)] group"
           >
             {/* Grayscale overlay with hover color reveal */}
             <div className="absolute inset-0 bg-[#ff6b00]/10 mix-blend-color z-10 pointer-events-none transition-opacity duration-700 group-hover:opacity-0" />
@@ -131,32 +131,42 @@ export function About() {
 
           {/* Animated Experience Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-            {cards.map((card, idx) => (
-              <motion.div
-                key={card.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.1 * idx }}
-                whileHover={{ y: -6 }}
-                className="p-6 rounded-[1.8rem] bg-white/3 border border-white/5 hover:border-[#ff6b00]/30 hover:bg-white/5 transition-all duration-300 relative group overflow-hidden"
-              >
-                {/* Spotlight background hover glow */}
-                <div className="absolute -inset-2 bg-radial-gradient from-[#ff6b00]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-md pointer-events-none" />
-                
-                <div className="w-12 h-12 rounded-2xl bg-white/3 border border-white/10 flex items-center justify-center mb-5 relative z-10 group-hover:border-[#ff6b00]/30 group-hover:scale-105 transition-all duration-300">
-                  {card.icon}
-                </div>
-                
-                <h3 className="text-base font-heading font-bold text-white mb-2 relative z-10 group-hover:text-[#ff6b00] transition-colors duration-300">
-                  {card.title}
-                </h3>
-                
-                <p className="text-xs text-white/50 leading-relaxed font-mono relative z-10">
-                  {card.description}
-                </p>
-              </motion.div>
-            ))}
+            {cards.map((card, idx) => {
+              // Alternating directions: left for even, right for odd
+              const slideDirection = idx % 2 === 0 ? -40 : 40;
+              return (
+                <motion.div
+                  key={card.title}
+                  initial={{ opacity: 0, x: slideDirection }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.1 * idx, ease: "easeOut" }}
+                  whileHover={{ 
+                    y: -8, 
+                    rotateX: 4, 
+                    rotateY: slideDirection > 0 ? 4 : -4,
+                    scale: 1.02
+                  }}
+                  style={{ perspective: "1000px" }}
+                  className="p-6 rounded-[1.8rem] bg-white/3 border border-white/5 hover:border-[#ff6b00]/60 hover:bg-white/5 transition-all duration-300 relative group overflow-visible shadow-[0_0_0_rgba(255,107,0,0)] hover:shadow-[0_0_25px_rgba(255,107,0,0.25)]"
+                >
+                  {/* Spotlight background hover glow */}
+                  <div className="absolute -inset-2 bg-radial-gradient from-[#ff6b00]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-md pointer-events-none" />
+                  
+                  <div className="w-12 h-12 rounded-2xl bg-[#ff6b00]/5 border border-[#ff6b00]/20 flex items-center justify-center mb-5 relative z-10 group-hover:bg-[#ff6b00]/20 group-hover:border-[#ff6b00]/40 group-hover:scale-110 transition-all duration-300">
+                    {card.icon}
+                  </div>
+                  
+                  <h3 className="text-base font-heading font-bold text-white mb-2 relative z-10 group-hover:text-[#ff6b00] transition-colors duration-300">
+                    {card.title}
+                  </h3>
+                  
+                  <p className="text-xs text-white/50 leading-relaxed font-mono relative z-10">
+                    {card.description}
+                  </p>
+                </motion.div>
+              );
+            })}
           </div>
 
         </div>

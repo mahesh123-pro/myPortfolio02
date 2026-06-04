@@ -3,9 +3,8 @@
 import { useRef, useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { journeyData } from "@/data/experience";
-import { motion } from "framer-motion";
-import { Calendar, Briefcase } from "lucide-react";
+import { journeyData, type JourneyStep } from "@/data/experience";
+import { Calendar } from "lucide-react";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -18,7 +17,8 @@ export function Experience() {
   useEffect(() => {
     // 1. Draw the vertical timeline line dynamically with scroll trigger
     const line = lineRef.current;
-    if (!line) return;
+    const container = containerRef.current;
+    if (!line || !container) return;
 
     gsap.fromTo(line, 
       { scaleY: 0 },
@@ -27,7 +27,7 @@ export function Experience() {
         transformOrigin: "top center",
         ease: "none",
         scrollTrigger: {
-          trigger: containerRef.current,
+          trigger: container,
           start: "top center",
           end: "bottom 80%",
           scrub: true,
@@ -36,35 +36,39 @@ export function Experience() {
     );
 
     // 2. Animate timeline blocks
-    const items = gsap.utils.toArray(".timeline-item");
-    items.forEach((item: any, i) => {
+    const items = gsap.utils.toArray<HTMLElement>(".timeline-item");
+    items.forEach((item, i) => {
       const isLeft = i % 2 === 0;
       const content = item.querySelector('.timeline-content');
       const dot = item.querySelector('.timeline-dot');
 
       // Animate dot pop-in
-      gsap.from(dot, {
-        scale: 0,
-        opacity: 0,
-        duration: 0.5,
-        ease: "back.out(2)",
-        scrollTrigger: {
-          trigger: item,
-          start: "top 80%",
-        }
-      });
+      if (dot) {
+        gsap.from(dot, {
+          scale: 0,
+          opacity: 0,
+          duration: 0.5,
+          ease: "back.out(2)",
+          scrollTrigger: {
+            trigger: item,
+            start: "top 80%",
+          }
+        });
+      }
 
       // Animate content card slide-in
-      gsap.from(content, {
-        x: isLeft ? -60 : 60,
-        opacity: 0,
-        duration: 0.8,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: item,
-          start: "top 80%",
-        }
-      });
+      if (content) {
+        gsap.from(content, {
+          x: isLeft ? -60 : 60,
+          opacity: 0,
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: item,
+            start: "top 80%",
+          }
+        });
+      }
     });
 
   }, []);
@@ -135,7 +139,7 @@ export function Experience() {
   );
 }
 
-function TimelineCard({ exp, isRight }: { exp: any, isRight: boolean }) {
+function TimelineCard({ exp, isRight }: { exp: JourneyStep, isRight: boolean }) {
   return (
     <div className="timeline-content bg-white/3 p-6 sm:p-8 rounded-[2rem] border border-white/5 hover:border-[#ff6b00]/30 hover:bg-white/5 transition-all duration-300 relative group flex flex-col gap-4">
       {/* Subtle hover backlight glow */}
